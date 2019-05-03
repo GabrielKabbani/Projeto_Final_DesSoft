@@ -2,7 +2,7 @@
 """
 Created on Fri May  3 07:31:59 2019
 
-@author: lfcsa
+@author:Aluno 1: Luis Filipe Carrete
 """
 
 #Imports
@@ -38,6 +38,7 @@ def load_assets (img_dir, snd_dir):
     assets = {}
     assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
+    assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
     return assets
 
 
@@ -68,14 +69,57 @@ class Player(pygame.sprite.Sprite):
         
         #Velocidade 
         self.speedx = 0
-        self.speedy = 0
+        self.speedy = 3
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         
         #Deixa dentro da tela
-        if self.rect.right > WIDTH - 55 or self.rect.left < 55:
-            self.speedx = 0
+        if self.rect.right > WIDTH - 55:
+            self.rect.right = WIDTH - 55
+            
+        if self.rect.left < 55:
+            self.rect.left = 55
+            
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
+        
+        if self.rect.top < 0:
+            self.rect.top = 0
+            
+class Tiles(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, tiles_img, tiles_y):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = tiles_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(tiles_img,(25,60))
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        #Centraliza no baixo da tela 
+        self.rect.centerx = WIDTH / 2
+        
+        self.rect.bottom = tiles_y
+        
+        self.road_speed = 3
+        
+    
+    def update(self):
+        self.rect.y += self.road_speed
+        
+        if self.rect.top > HEIGHT:
+            self.rect.bottom = 0
+        
+        
         
         
 #Tamanho da tela
@@ -99,7 +143,22 @@ player = Player(assets['player_img'])
 
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
+
+tiles_sprites = pygame.sprite.Group()
+
+
+tile_y = 0
+
+for i in range(6):
+    i = Tiles(assets['tiles'], tile_y)
+    tile_y -= 110
+    tiles_sprites.add(i) 
+
+all_sprites.add(tiles_sprites)
+
 all_sprites.add(player)
+
+
     
 
 #Para nao travarmos:
@@ -109,6 +168,7 @@ try:
     while running:
         #Ajusta velocidade de jogo
         clock.tick(FPS)
+        
         
         # Processa os eventos
         for event in pygame.event.get():
@@ -120,9 +180,14 @@ try:
             #Verifica se clica tecla
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    player.speedx = -10
+                    player.speedx = -8
                 if event.key == pygame.K_RIGHT:
-                    player.speedx = 10
+                    player.speedx = 8
+                if event.key == pygame.K_UP:
+                    player.speedy = -5
+                if event.key == pygame.K_DOWN:
+                    player.speedy = 5
+            
             
             #Verifica se tecla soltou
             if event.type == pygame.KEYUP:
@@ -130,9 +195,18 @@ try:
                     player.speedx = 0
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 0
+                if event.key == pygame.K_UP:
+                    player.speedy = 3
+                if event.key == pygame.K_DOWN:
+                    player.speedy = 3
+            
+            
+        
+                
                 
         #Atualiza sprites depois de cada evento
         all_sprites.update()
+        
         
         
         #Cada loop redesenha os sprites
