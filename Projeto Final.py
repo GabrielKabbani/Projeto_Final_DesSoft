@@ -9,7 +9,7 @@ Created on Fri May  3 07:31:59 2019
 import pygame
 from os import path
 import time
-
+import random
 
 img_dir = path.join(path.dirname(__file__), 'img_dir')
 snd_dir = path.join(path.dirname(__file__), 'snd_dir')
@@ -39,6 +39,7 @@ def load_assets (img_dir, snd_dir):
     assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
+    assets['oil'] = pygame.image.load(path.join(img_dir,'oil.png')).convert()
     return assets
 
 
@@ -105,7 +106,6 @@ class Tiles(pygame.sprite.Sprite):
         #Detalhe sobre posicionamento
         self.rect = self.image.get_rect()
         
-        #Centraliza no baixo da tela 
         self.rect.centerx = WIDTH / 2
         
         self.rect.bottom = tiles_y
@@ -118,8 +118,34 @@ class Tiles(pygame.sprite.Sprite):
         
         if self.rect.top > HEIGHT:
             self.rect.bottom = 0
+
+class Oil(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, oil_img):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
         
+        #Cria sprite
+        self.image = oil_img
         
+        #Define tamanho
+        self.image = pygame.transform.scale(oil_img,(70,70))
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.centerx = random.randint(55 , WIDTH-55)
+        
+        self.rect.bottom = 0
+        
+    def update(self):
+        self.rect.bottom += 3
+        
+        if self.rect.top == HEIGHT:
+            self.kill()
         
         
 #Tamanho da tela
@@ -140,6 +166,8 @@ background_rect = background.get_rect()
 
 #Cria a variavel que contem classe do player
 player = Player(assets['player_img'])
+
+oil = Oil(assets['oil'])
 
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
@@ -199,14 +227,19 @@ try:
                     player.speedy = 3
                 if event.key == pygame.K_DOWN:
                     player.speedy = 3
-            
+        
+        #Spawn oil
+        oil_spawn = random.randint(0,200)
+        
+        if oil_spawn == 57:
+            i = Oil(assets['oil'])
+            all_sprites.add(i)
             
         
                 
                 
         #Atualiza sprites depois de cada evento
         all_sprites.update()
-        
         
         
         #Cada loop redesenha os sprites
