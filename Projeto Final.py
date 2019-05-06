@@ -40,6 +40,7 @@ def load_assets (img_dir, snd_dir):
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
     assets['oil'] = pygame.image.load(path.join(img_dir,'oil.png')).convert()
+    assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     return assets
 
 
@@ -67,6 +68,7 @@ class Player(pygame.sprite.Sprite):
         #Centraliza no baixo da tela 
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 40
+        
         
         #Velocidade 
         self.speedx = 0
@@ -109,6 +111,35 @@ class Tiles(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH / 2
         
         self.rect.bottom = tiles_y
+        
+        self.road_speed = 3
+    def update(self):
+        self.rect.y += self.road_speed
+        
+        if self.rect.top > HEIGHT:
+            self.rect.bottom = 0
+
+class Cerca(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, cerca_img, cerca_y, cerca_x):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = cerca_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(cerca_img,(25,60))
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.centerx = cerca_x
+        
+        self.rect.bottom = cerca_y
         
         self.road_speed = 3
         
@@ -174,16 +205,29 @@ all_sprites = pygame.sprite.Group()
 
 tiles_sprites = pygame.sprite.Group()
 
+cerca_sprites = pygame.sprite.Group()
 
 tile_y = 0
 
-for i in range(6):
+for i in range(7):
     i = Tiles(assets['tiles'], tile_y)
     tile_y -= 110
-    tiles_sprites.add(i) 
+    tiles_sprites.add(i)
 
+cerca_y = 0
+
+for i in range(12):
+    i = Cerca(assets['cerca'], cerca_y, 40)
+    cerca_y -= 60
+    cerca_sprites.add(i) 
+    
+for i in range(12):
+    i = Cerca(assets['cerca'], cerca_y, 360)
+    cerca_y -= 60
+    cerca_sprites.add(i) 
+    
+all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
-
 all_sprites.add(player)
 
 
