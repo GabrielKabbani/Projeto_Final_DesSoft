@@ -59,6 +59,7 @@ class Player(pygame.sprite.Sprite):
         #Define tamanho
         self.image = pygame.transform.scale(player_img,(40,55))
         
+        
         #Deixa transparente
         self.image.set_colorkey(BLACK)
         
@@ -68,6 +69,7 @@ class Player(pygame.sprite.Sprite):
         #Centraliza no baixo da tela 
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 40
+        
         
         
         #Velocidade 
@@ -218,13 +220,10 @@ cerca_y = 0
 
 for i in range(12):
     i = Cerca(assets['cerca'], cerca_y, 40)
+    ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
     cerca_y -= 60
-    cerca_sprites.add(i) 
-    
-for i in range(12):
-    i = Cerca(assets['cerca'], cerca_y, 360)
-    cerca_y -= 60
-    cerca_sprites.add(i) 
+    cerca_sprites.add(i)
+    cerca_sprites.add(ii)
     
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
