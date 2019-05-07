@@ -18,6 +18,7 @@ snd_dir = path.join(path.dirname(__file__), 'snd_dir')
 WIDTH = 400
 HEIGHT = 600
 FPS = 60
+road_speed = 3
 
 # Define algumas variáveis com as cores básicas
 WHITE = (255, 255, 255)
@@ -41,7 +42,9 @@ def load_assets (img_dir, snd_dir):
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
     assets['oil'] = pygame.image.load(path.join(img_dir,'oil.png')).convert()
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
+    assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     return assets
+
 
 
 #Classes
@@ -114,9 +117,9 @@ class Tiles(pygame.sprite.Sprite):
         
         self.rect.bottom = tiles_y
         
-        self.road_speed = 3
+        
     def update(self):
-        self.rect.y += self.road_speed
+        self.rect.y += road_speed
         
         if self.rect.top > HEIGHT:
             self.rect.bottom = 0
@@ -143,11 +146,9 @@ class Cerca(pygame.sprite.Sprite):
         
         self.rect.bottom = cerca_y
         
-        self.road_speed = 3
-        
     
     def update(self):
-        self.rect.y += self.road_speed
+        self.rect.y += road_speed
         
         if self.rect.top > HEIGHT:
             self.rect.bottom = 0
@@ -170,15 +171,44 @@ class Oil(pygame.sprite.Sprite):
         #Detalhe sobre posicionamento
         self.rect = self.image.get_rect()
         
-        self.rect.centerx = random.randint(55 , WIDTH-55)
+        self.rect.centerx = random.randint(70 , WIDTH-70)
         
         self.rect.bottom = 0
         
     def update(self):
-        self.rect.bottom += 3
+        self.rect.bottom += road_speed
         
         if self.rect.top == HEIGHT:
             self.kill()
+
+class Boost(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, boost_img):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = boost_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(boost_img,(50,60))
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.centerx = random.randint(70 , WIDTH-70)
+        
+        self.rect.bottom = 0
+        
+    def update(self):
+        self.rect.bottom += road_speed
+        
+        if self.rect.top == HEIGHT:
+            self.kill()
+
         
         
 #Tamanho da tela
@@ -199,8 +229,6 @@ background_rect = background.get_rect()
 
 #Cria a variavel que contem classe do player
 player = Player(assets['player_img'])
-
-oil = Oil(assets['oil'])
 
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
@@ -277,9 +305,15 @@ try:
         if oil_spawn == 57:
             i = Oil(assets['oil'])
             all_sprites.add(i)
-            
         
-                
+        boost_spawn = random.randint(0,200)
+        
+        if oil_spawn == 57:
+            i = Boost(assets['speed_boost'])
+            all_sprites.add(i)
+
+            
+            
                 
         #Atualiza sprites depois de cada evento
         all_sprites.update()
