@@ -85,12 +85,13 @@ class Player(pygame.sprite.Sprite):
         
         #Velocidade 
         self.speedx = 0
-        self.speedy = 3
-        
+        self.speedy = 3  
         
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        
+            
         
         #Deixa dentro da tela
         if self.rect.right > WIDTH - 55:
@@ -104,7 +105,6 @@ class Player(pygame.sprite.Sprite):
         
         if self.rect.top < 0:
             self.rect.top = 0
-            
             
             
         
@@ -248,8 +248,6 @@ class Coins(pygame.sprite.Sprite):
         #Controlle de ticks da animacao 1 tick = 1 milisegundo
         self.frame_ticks = 100
         
-        #Transforma em circulo
-        self.radius = 25
     
     def update(self):
         self.rect.y += road_speed
@@ -280,6 +278,11 @@ class Coins(pygame.sprite.Sprite):
         if self.rect.y > HEIGHT:
             self.rect.x = random.randint(70, WIDTH-70)
             self.rect.y = 0
+        
+        #Aciona pega moeda
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                coin.rect.y = random.randint(-2000, -500)
             
        
         
@@ -359,9 +362,9 @@ try:
             #Verifica se clica tecla
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    player.speedx = -8
+                    player.speedx = -5
                 if event.key == pygame.K_RIGHT:
-                    player.speedx = 8
+                    player.speedx = 5
                 if event.key == pygame.K_UP:
                     player.speedy = -5
                 if event.key == pygame.K_DOWN:
@@ -378,16 +381,12 @@ try:
                     player.speedy = 3
                 if event.key == pygame.K_DOWN:
                     player.speedy = 3
-
-            
+                
             
                 
         #Atualiza sprites depois de cada evento
         all_sprites.update()
         
-        #coin_catch = pygame.sprite.spritecollide(player, coin, False, pygame.sprite.collide_rect)
-        #if coin_catch:
-         #   coin.rect.y = random.randint(-2000, -500)
         
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
