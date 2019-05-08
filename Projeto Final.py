@@ -78,6 +78,7 @@ class Player(pygame.sprite.Sprite):
         #Velocidade 
         self.speedx = 0
         self.speedy = 3
+        
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -95,6 +96,9 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.rect.top = 0
             
+            
+            
+        
 class Tiles(pygame.sprite.Sprite):
     #Construtor de classe
     def __init__ (self, tiles_img, tiles_y):
@@ -203,13 +207,14 @@ class Boost(pygame.sprite.Sprite):
         
         self.rect.bottom = 0
         
+        
     def update(self):
         self.rect.bottom += road_speed
         
+        
         if self.rect.top == HEIGHT:
             self.kill()
-
-        
+       
         
 #Tamanho da tela
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
