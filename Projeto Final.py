@@ -21,6 +21,7 @@ HEIGHT = 600
 FPS = 60
 road_speed = 3
 
+
 # Define algumas variáveis com as cores básicas
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -45,7 +46,7 @@ def load_assets (img_dir, snd_dir):
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
-    assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 13)
+    assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     coins_anim = []
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
@@ -89,7 +90,7 @@ class Player(pygame.sprite.Sprite):
         
         #Velocidade 
         self.speedx = 0
-        self.speedy = 3  
+        self.speedy = road_speed
         
     def update(self):
         self.rect.x += self.speedx
@@ -222,6 +223,9 @@ class Boost(pygame.sprite.Sprite):
         
         self.rect.bottom = 0
         
+        self.speed_up = False
+        
+        self.last_update = pygame.time.get_ticks()
         
     def update(self):
         self.rect.bottom += road_speed
@@ -230,6 +234,19 @@ class Boost(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
+        
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                self.speed_up = True
+                self.last_update = pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
+        
+        time_elapsed = now - self.last_update
+        
+        if time_elapsed > 2000:
+            self.speed_up = False
+                
+                
 
 class Coins(pygame.sprite.Sprite):
     #Construtor de classe.
@@ -416,18 +433,21 @@ try:
         #Atualiza sprites depois de cada evento
         all_sprites.update()
         
-        
+        if speed_boost.speed_up:
+            road_speed = 9
+        else: road_speed = 3
+            
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
         
         # Desenha o score
-        text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
-        text_rect = text_surface.get_rect()
-        text_rect.left = (15)
-        text_rect.top = (22)
-        screen.blit(text_surface, text_rect)
+        #text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
+        #text_rect = text_surface.get_rect()
+        #text_rect.left = (15)
+        #text_rect.top = (22)
+        #screen.blit(text_surface, text_rect)
         
         #Depois de desenhar inverte o display
         pygame.display.flip()
