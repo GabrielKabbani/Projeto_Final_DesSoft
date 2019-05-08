@@ -43,6 +43,7 @@ def load_assets (img_dir, snd_dir):
     assets['oil'] = pygame.image.load(path.join(img_dir,'oil.png')).convert()
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
+    assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     coins_anim = []
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
@@ -283,7 +284,29 @@ class Coins(pygame.sprite.Sprite):
         if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
             if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
                 coin.rect.y = random.randint(-2000, -500)
-            
+
+
+        
+class Score(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, score_img):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = score_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(score_img,(150,50))
+        
+        #Deixa transparente
+        #self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.top = 5
+        self.rect.left = 5
        
         
 #Tamanho da tela
@@ -303,6 +326,8 @@ background = assets["background"]
 background_rect = background.get_rect()
 
 #Cria a variavel que contem classe do player
+score_board = Score(assets["score_board"])
+
 player = Player(assets['player_img'])
 
 coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
@@ -335,6 +360,7 @@ for i in range(12):
     
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
+all_sprites.add(score_board)
 all_sprites.add(speed_boost)
 all_sprites.add(oil)
 all_sprites.add(coin)
