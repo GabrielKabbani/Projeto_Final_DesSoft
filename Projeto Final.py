@@ -87,6 +87,7 @@ class Player(pygame.sprite.Sprite):
         self.speedx = 0
         self.speedy = 3
         
+        
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -190,8 +191,10 @@ class Oil(pygame.sprite.Sprite):
     def update(self):
         self.rect.bottom += road_speed
         
-        if self.rect.top == HEIGHT:
-            self.kill()
+        if self.rect.top > HEIGHT:
+            #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
+            self.rect.y = random.randint(-2000, -500)
+            
 
 class Boost(pygame.sprite.Sprite):
     #Construtor de classe
@@ -220,8 +223,9 @@ class Boost(pygame.sprite.Sprite):
         self.rect.bottom += road_speed
         
         
-        if self.rect.top == HEIGHT:
-            self.kill()
+        if self.rect.top > HEIGHT:
+            #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
+            self.rect.y = random.randint(-2000, -500)
 
 class Coins(pygame.sprite.Sprite):
     #Construtor de classe.
@@ -243,6 +247,9 @@ class Coins(pygame.sprite.Sprite):
         
         #Controlle de ticks da animacao 1 tick = 1 milisegundo
         self.frame_ticks = 100
+        
+        #Transforma em circulo
+        self.radius = 25
     
     def update(self):
         self.rect.y += road_speed
@@ -296,6 +303,10 @@ background_rect = background.get_rect()
 player = Player(assets['player_img'])
 
 coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
+
+oil = Oil(assets['oil'])
+
+speed_boost = Boost(assets['speed_boost'])
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
 
@@ -321,6 +332,8 @@ for i in range(12):
     
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
+all_sprites.add(speed_boost)
+all_sprites.add(oil)
 all_sprites.add(coin)
 all_sprites.add(player)
 
@@ -365,19 +378,6 @@ try:
                     player.speedy = 3
                 if event.key == pygame.K_DOWN:
                     player.speedy = 3
-        
-        #Spawn oil
-        oil_spawn = random.randint(0,200)
-        
-        if oil_spawn == 57:
-            i = Oil(assets['oil'])
-            #all_sprites.add(i)
-        
-        boost_spawn = random.randint(0,200)
-        
-        if oil_spawn == 57:
-            i = Boost(assets['speed_boost'])
-            #all_sprites.add(i)
 
             
             
@@ -385,6 +385,9 @@ try:
         #Atualiza sprites depois de cada evento
         all_sprites.update()
         
+        #coin_catch = pygame.sprite.spritecollide(player, coin, False, pygame.sprite.collide_rect)
+        #if coin_catch:
+         #   coin.rect.y = random.randint(-2000, -500)
         
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
