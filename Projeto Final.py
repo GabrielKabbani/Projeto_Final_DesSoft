@@ -13,6 +13,7 @@ import random
 
 img_dir = path.join(path.dirname(__file__), 'img_dir')
 snd_dir = path.join(path.dirname(__file__), 'snd_dir')
+fnt_dir = path.join(path.dirname(__file__), 'font')
 
 #Dados gerais do jogo
 WIDTH = 400
@@ -44,6 +45,7 @@ def load_assets (img_dir, snd_dir):
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
+    assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 13)
     coins_anim = []
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
@@ -82,7 +84,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 40
         
-        
+        #Quantidade de dinheiro inicial
+        self.cash = 0
         
         #Velocidade 
         self.speedx = 0
@@ -278,12 +281,13 @@ class Coins(pygame.sprite.Sprite):
                 self.rect.center = center
         if self.rect.y > HEIGHT:
             self.rect.x = random.randint(70, WIDTH-70)
-            self.rect.y = 0
+            self.rect.y = random.randint(-2000, -500)
         
         #Aciona pega moeda
         if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
             if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
                 coin.rect.y = random.randint(-2000, -500)
+                player.cash += 100
 
 
         
@@ -299,16 +303,13 @@ class Score(pygame.sprite.Sprite):
         #Define tamanho
         self.image = pygame.transform.scale(score_img,(150,50))
         
-        #Deixa transparente
-        #self.image.set_colorkey(BLACK)
-        
         #Detalhe sobre posicionamento
         self.rect = self.image.get_rect()
         
         self.rect.top = 5
         self.rect.left = 5
-       
-        
+    
+            
 #Tamanho da tela
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 
@@ -320,6 +321,9 @@ clock = pygame.time.Clock()
 
 #Carrega os assets 
 assets = load_assets(img_dir, snd_dir)
+
+# Carrega a fonte para desenhar o score.
+score_font = assets["score_font"]
 
 #Carrega fundo
 background = assets["background"]
@@ -360,12 +364,11 @@ for i in range(12):
     
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
-all_sprites.add(score_board)
 all_sprites.add(speed_boost)
 all_sprites.add(oil)
 all_sprites.add(coin)
 all_sprites.add(player)
-
+all_sprites.add(score_board)
 
     
 
@@ -388,13 +391,13 @@ try:
             #Verifica se clica tecla
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    player.speedx = -5
+                    player.speedx = -3
                 if event.key == pygame.K_RIGHT:
-                    player.speedx = 5
+                    player.speedx = 3
                 if event.key == pygame.K_UP:
-                    player.speedy = -5
+                    player.speedy = -3
                 if event.key == pygame.K_DOWN:
-                    player.speedy = 5
+                    player.speedy = 3
             
             
             #Verifica se tecla soltou
@@ -418,6 +421,13 @@ try:
         screen.fill(BLACK)
         screen.blit(background, background_rect)
         all_sprites.draw(screen)
+        
+        # Desenha o score
+        text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
+        text_rect = text_surface.get_rect()
+        text_rect.left = (15)
+        text_rect.top = (22)
+        screen.blit(text_surface, text_rect)
         
         #Depois de desenhar inverte o display
         pygame.display.flip()
