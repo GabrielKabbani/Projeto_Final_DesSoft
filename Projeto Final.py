@@ -245,6 +245,7 @@ class Coins(pygame.sprite.Sprite):
         self.frame_ticks = 100
     
     def update(self):
+        self.rect.y += road_speed
         #Verifica tick atual.
         now = pygame.time.get_ticks()
         
@@ -269,6 +270,10 @@ class Coins(pygame.sprite.Sprite):
                 self.image = self.coins_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
+        if self.rect.y > HEIGHT:
+            self.rect.x = random.randint(70, WIDTH-70)
+            self.rect.y = 0
+            
        
         
 #Tamanho da tela
@@ -290,7 +295,7 @@ background_rect = background.get_rect()
 #Cria a variavel que contem classe do player
 player = Player(assets['player_img'])
 
-coin = Coins((150,300),assets['coin'])
+coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
 
