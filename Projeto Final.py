@@ -123,7 +123,7 @@ class Tiles(pygame.sprite.Sprite):
         self.image = tiles_img
         
         #Define tamanho
-        self.image = pygame.transform.scale(tiles_img,(25,60))
+        self.image = pygame.transform.scale(tiles_img,(25,70))
         
         #Deixa transparente
         self.image.set_colorkey(BLACK)
@@ -139,8 +139,8 @@ class Tiles(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
-        if self.rect.top > HEIGHT:
-            self.rect.bottom = 0
+        if self.rect.top >= HEIGHT:
+            self.rect.bottom = -30
 
 class Cerca(pygame.sprite.Sprite):
     #Construtor de classe
@@ -168,7 +168,7 @@ class Cerca(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
-        if self.rect.top > HEIGHT:
+        if self.rect.top >= HEIGHT:
             self.rect.bottom = 0
 
 class Oil(pygame.sprite.Sprite):
@@ -196,7 +196,7 @@ class Oil(pygame.sprite.Sprite):
     def update(self):
         self.rect.bottom += road_speed
         
-        if self.rect.top > HEIGHT:
+        if self.rect.top == HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
             self.rect.centerx = random.randint(70 , WIDTH-70)
@@ -366,16 +366,16 @@ tiles_sprites = pygame.sprite.Group()
 
 cerca_sprites = pygame.sprite.Group()
 
-tile_y = 0
+tile_y = HEIGHT
 
 for i in range(7):
     i = Tiles(assets['tiles'], tile_y)
-    tile_y -= 110
+    tile_y -= 100
     tiles_sprites.add(i)
 
-cerca_y = 0
+cerca_y = HEIGHT
 
-for i in range(12):
+for i in range(11):
     i = Cerca(assets['cerca'], cerca_y, 40)
     ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
     cerca_y -= 60
