@@ -307,7 +307,7 @@ class Coins(pygame.sprite.Sprite):
         if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
             if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
                 coin.rect.y = random.randint(-2000, -500)
-                player.cash += 100
+                player.cash += 10
 
 
         
