@@ -18,7 +18,7 @@ fnt_dir = path.join(path.dirname(__file__), 'font')
 #Dados gerais do jogo
 WIDTH = 400
 HEIGHT = 600
-FPS = 30
+FPS = 60
 road_speed = 3
 
 
@@ -139,13 +139,9 @@ class Tiles(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
-<<<<<<< HEAD
-        if self.rect.top > HEIGHT:
-            self.rect.bottom = 0
-=======
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT - 30
->>>>>>> 71202c9c91664a4e9ea6138774168ae6d6f0f728
+
 
 class Cerca(pygame.sprite.Sprite):
     #Construtor de classe
@@ -173,13 +169,8 @@ class Cerca(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
-<<<<<<< HEAD
-        if self.rect.top > HEIGHT:
-            self.rect.bottom = 0
-=======
         if self.rect.top >= HEIGHT:
-            self.rect.bottom = (self.rect.top - HEIGHT)
->>>>>>> 71202c9c91664a4e9ea6138774168ae6d6f0f728
+            self.rect.bottom = self.rect.top - HEIGHT
 
 class Oil(pygame.sprite.Sprite):
     #Construtor de classe
@@ -380,7 +371,7 @@ tile_y = 0
 
 for i in range(7):
     i = Tiles(assets['tiles'], tile_y)
-    tile_y -= 110
+    tile_y -= 100
     tiles_sprites.add(i)
 
 cerca_y = 0
