@@ -199,7 +199,8 @@ class Oil(pygame.sprite.Sprite):
         if self.rect.top == HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
-            
+            self.rect.centerx = random.randint(70 , WIDTH-70)
+
 
 class Boost(pygame.sprite.Sprite):
     #Construtor de classe
