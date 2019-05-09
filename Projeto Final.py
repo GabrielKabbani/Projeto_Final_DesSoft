@@ -231,9 +231,11 @@ class Boost(pygame.sprite.Sprite):
         self.rect.bottom += road_speed
         
         
-        if self.rect.top > HEIGHT:
+        if self.rect.top >= HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
+            self.rect.centerx = random.randint(70 , WIDTH-70)
+
         
         if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
             if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
