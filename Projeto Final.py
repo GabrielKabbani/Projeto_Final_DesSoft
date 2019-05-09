@@ -140,7 +140,7 @@ class Tiles(pygame.sprite.Sprite):
         self.rect.y += road_speed
         
         if self.rect.top >= HEIGHT:
-            self.rect.bottom = -30
+            self.rect.bottom = self.rect.top - HEIGHT - 30
 
 class Cerca(pygame.sprite.Sprite):
     #Construtor de classe
@@ -169,7 +169,7 @@ class Cerca(pygame.sprite.Sprite):
         self.rect.y += road_speed
         
         if self.rect.top >= HEIGHT:
-            self.rect.bottom = 0
+            self.rect.bottom = (self.rect.top - HEIGHT)
 
 class Oil(pygame.sprite.Sprite):
     #Construtor de classe
