@@ -443,11 +443,11 @@ try:
         all_sprites.draw(screen)
         
         # Desenha o score
-        #text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
-        #text_rect = text_surface.get_rect()
-        #text_rect.left = (15)
-        #text_rect.top = (22)
-        #screen.blit(text_surface, text_rect)
+        text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
+        text_rect = text_surface.get_rect()
+        text_rect.left = (15)
+        text_rect.top = (22)
+        screen.blit(text_surface, text_rect)
         
         #Depois de desenhar inverte o display
         pygame.display.flip()
