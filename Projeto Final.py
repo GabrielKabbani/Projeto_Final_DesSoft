@@ -18,7 +18,7 @@ fnt_dir = path.join(path.dirname(__file__), 'font')
 #Dados gerais do jogo
 WIDTH = 400
 HEIGHT = 600
-FPS = 60
+FPS = 30
 road_speed = 3
 
 
@@ -123,7 +123,7 @@ class Tiles(pygame.sprite.Sprite):
         self.image = tiles_img
         
         #Define tamanho
-        self.image = pygame.transform.scale(tiles_img,(25,70))
+        self.image = pygame.transform.scale(tiles_img,(25,60))
         
         #Deixa transparente
         self.image.set_colorkey(BLACK)
@@ -139,8 +139,13 @@ class Tiles(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
+<<<<<<< HEAD
+        if self.rect.top > HEIGHT:
+            self.rect.bottom = 0
+=======
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT - 30
+>>>>>>> 71202c9c91664a4e9ea6138774168ae6d6f0f728
 
 class Cerca(pygame.sprite.Sprite):
     #Construtor de classe
@@ -168,8 +173,13 @@ class Cerca(pygame.sprite.Sprite):
     def update(self):
         self.rect.y += road_speed
         
+<<<<<<< HEAD
+        if self.rect.top > HEIGHT:
+            self.rect.bottom = 0
+=======
         if self.rect.top >= HEIGHT:
             self.rect.bottom = (self.rect.top - HEIGHT)
+>>>>>>> 71202c9c91664a4e9ea6138774168ae6d6f0f728
 
 class Oil(pygame.sprite.Sprite):
     #Construtor de classe
@@ -196,7 +206,7 @@ class Oil(pygame.sprite.Sprite):
     def update(self):
         self.rect.bottom += road_speed
         
-        if self.rect.top == HEIGHT:
+        if self.rect.top > HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
             self.rect.centerx = random.randint(70 , WIDTH-70)
@@ -366,16 +376,16 @@ tiles_sprites = pygame.sprite.Group()
 
 cerca_sprites = pygame.sprite.Group()
 
-tile_y = HEIGHT
+tile_y = 0
 
 for i in range(7):
     i = Tiles(assets['tiles'], tile_y)
-    tile_y -= 100
+    tile_y -= 110
     tiles_sprites.add(i)
 
-cerca_y = HEIGHT
+cerca_y = 0
 
-for i in range(11):
+for i in range(12):
     i = Cerca(assets['cerca'], cerca_y, 40)
     ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
     cerca_y -= 60
