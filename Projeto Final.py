@@ -10,17 +10,23 @@ import pygame
 from os import path
 import time
 import random
+import json
 
 img_dir = path.join(path.dirname(__file__), 'img_dir')
 snd_dir = path.join(path.dirname(__file__), 'snd_dir')
 fnt_dir = path.join(path.dirname(__file__), 'font')
+
+#Abre historico de jogador
+with open('historico_de_player.txt','r') as arquivo:
+    texto = arquivo.read()
+    
+dados = json.loads(texto)
 
 #Dados gerais do jogo
 WIDTH = 400
 HEIGHT = 600
 FPS = 60
 road_speed = 3
-player_cash = 0
 
 
 # Define algumas variáveis com as cores básicas
@@ -87,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 40
         
         #Quantidade de dinheiro inicial
-        self.cash = 0
+        self.cash = dados['player_coins']
         
         #Velocidade 
         self.speedx = 0
@@ -95,9 +101,8 @@ class Player(pygame.sprite.Sprite):
         
     def update(self):
         self.rect.x += self.speedx
-        self.rect.y += self.speedy
-        
-            
+        self.rect.bottom += self.speedy
+    
         
         #Deixa dentro da tela
         if self.rect.right > WIDTH - 55:
@@ -195,6 +200,12 @@ class Lama(pygame.sprite.Sprite):
         
         self.rect.bottom = random.randint(-2000, -500)
         
+        #Deixa drag do carro falso ate passar pela lama
+        self.drag = False
+        
+        #Cria variavel para pegar tick
+        self.last_update = pygame.time.get_ticks()
+        
     def update(self):
         self.rect.bottom += road_speed
         
@@ -202,6 +213,19 @@ class Lama(pygame.sprite.Sprite):
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
             self.rect.centerx = random.randint(70 , WIDTH-70)
+            
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                self.drag = True
+                speed_boost.speed_up = False
+                self.last_update = pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
+        
+        time_elapsed = now - self.last_update
+        
+        if time_elapsed > 1000:
+            self.drag = False
+                    
 
 
 class Boost(pygame.sprite.Sprite):
@@ -229,6 +253,7 @@ class Boost(pygame.sprite.Sprite):
         self.speed_up = False
         
         self.last_update = pygame.time.get_ticks()
+        
         
     def update(self):
         self.rect.bottom += road_speed
@@ -267,6 +292,7 @@ class Coins(pygame.sprite.Sprite):
         self.image = self.coins_anim[self.frame]
         self.rect = self.image.get_rect()
         self.rect.center = center
+        self.rect.y = random.randint(-2000, -500)
         
         #Guarda tick da primeira imagem
         self.last_update = pygame.time.get_ticks()
@@ -358,7 +384,7 @@ player = Player(assets['player_img'])
 
 coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
 
-lama = Lama(assets['lama'])
+#lama = Lama(assets['lama'])
 
 speed_boost = Boost(assets['speed_boost'])
 #Adiciona sprite 
@@ -367,6 +393,7 @@ all_sprites = pygame.sprite.Group()
 tiles_sprites = pygame.sprite.Group()
 
 cerca_sprites = pygame.sprite.Group()
+
 
 tile_y = 0
 
@@ -383,11 +410,12 @@ for i in range(12):
     cerca_y -= 60
     cerca_sprites.add(i)
     cerca_sprites.add(ii)
-    
+
+
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
 all_sprites.add(speed_boost)
-all_sprites.add(lama)
+#all_sprites.add(lama)
 all_sprites.add(coin)
 all_sprites.add(player)
 all_sprites.add(score_board)
@@ -417,10 +445,8 @@ try:
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 3
                 if event.key == pygame.K_UP:
-                    player.speedy = -3
-                if event.key == pygame.K_DOWN:
-                    player.speedy = 3
-            
+                    player.speedy = -5
+                    
             
             #Verifica se tecla soltou
             if event.type == pygame.KEYUP:
@@ -429,9 +455,8 @@ try:
                 if event.key == pygame.K_RIGHT:
                     player.speedx = 0
                 if event.key == pygame.K_UP:
-                    player.speedy = 3
-                if event.key == pygame.K_DOWN:
-                    player.speedy = 3
+                    player.speedy = road_speed
+            
                 
             
                 
@@ -441,6 +466,8 @@ try:
         if speed_boost.speed_up:
             road_speed = 9
         else: road_speed = 3
+        
+            
             
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
@@ -458,5 +485,9 @@ try:
         pygame.display.flip()
         
 finally:
-    
+    dados['player_coins'] = player.cash
+    json_dados = json.dumps(dados, sort_keys = True, indent = 4)
+    with open('historico_de_player.txt','w') as arquivo:
+        arquivo.write(json_dados)
+
     pygame.quit()
