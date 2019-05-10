@@ -20,6 +20,7 @@ WIDTH = 400
 HEIGHT = 600
 FPS = 60
 road_speed = 3
+player_cash = 0
 
 
 # Define algumas variáveis com as cores básicas
@@ -42,7 +43,7 @@ def load_assets (img_dir, snd_dir):
     assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
-    assets['oil'] = pygame.image.load(path.join(img_dir,'oil.png')).convert()
+    assets['lama'] = pygame.image.load(path.join(img_dir,'lama.png')).convert()
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
@@ -172,17 +173,17 @@ class Cerca(pygame.sprite.Sprite):
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT
 
-class Oil(pygame.sprite.Sprite):
+class Lama(pygame.sprite.Sprite):
     #Construtor de classe
-    def __init__ (self, oil_img):
+    def __init__ (self, lama_img):
         #Construtor de classe pai
         pygame.sprite.Sprite.__init__(self)
         
         #Cria sprite
-        self.image = oil_img
+        self.image = lama_img
         
         #Define tamanho
-        self.image = pygame.transform.scale(oil_img,(70,70))
+        self.image = pygame.transform.scale(lama_img,(70,70))
         
         #Deixa transparente
         self.image.set_colorkey(BLACK)
@@ -192,7 +193,7 @@ class Oil(pygame.sprite.Sprite):
         
         self.rect.centerx = random.randint(70 , WIDTH-70)
         
-        self.rect.bottom = 0
+        self.rect.bottom = random.randint(-2000, -500)
         
     def update(self):
         self.rect.bottom += road_speed
@@ -223,7 +224,7 @@ class Boost(pygame.sprite.Sprite):
         
         self.rect.centerx = random.randint(70 , WIDTH-70)
         
-        self.rect.bottom = 0
+        self.rect.bottom = random.randint(-2000, -500)
         
         self.speed_up = False
         
@@ -357,7 +358,7 @@ player = Player(assets['player_img'])
 
 coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
 
-oil = Oil(assets['oil'])
+lama = Lama(assets['lama'])
 
 speed_boost = Boost(assets['speed_boost'])
 #Adiciona sprite 
@@ -386,7 +387,7 @@ for i in range(12):
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
 all_sprites.add(speed_boost)
-all_sprites.add(oil)
+all_sprites.add(lama)
 all_sprites.add(coin)
 all_sprites.add(player)
 all_sprites.add(score_board)
@@ -447,7 +448,7 @@ try:
         all_sprites.draw(screen)
         
         # Desenha o score
-        text_surface = score_font.render("Coins:{0}".format(player.cash), True, GREEN)
+        text_surface = score_font.render("Coins:{0}".format(player.cash), True, YELLOW)
         text_rect = text_surface.get_rect()
         text_rect.left = (15)
         text_rect.top = (22)
@@ -457,4 +458,5 @@ try:
         pygame.display.flip()
         
 finally:
+    
     pygame.quit()
