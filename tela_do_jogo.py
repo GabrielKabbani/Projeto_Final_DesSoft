@@ -12,7 +12,7 @@ import time
 import random
 import json
 
-from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, QUIT
+from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, QUIT, road_speed
 
 #Abre historico de jogador
 with open('historico_de_player.txt','r') as arquivo:
