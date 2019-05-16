@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed May 15 11:06:54 2019
-
-@author: lfcsa
-"""
 
 # Importando as bibliotecas necessárias.
 import pygame
 import random
 import time
 
+from os import path
 
 from config import WIDTH, HEIGHT, INIT, GAME, QUIT
 from tela_inicial import tela_inicial
@@ -23,7 +19,7 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Nome do jogo
-pygame.display.set_caption("Ride Along")
+pygame.display.set_caption("Navinha")
 
 # Comando para evitar travamentos.
 try:
