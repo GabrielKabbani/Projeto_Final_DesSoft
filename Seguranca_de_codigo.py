@@ -30,6 +30,13 @@ pygame.mixer.init()
 
 def load_assets (img_dir, snd_dir):
     assets = {}
+    mobs_sprite=[]
+    for i in range(1,5):
+        filename = "mob{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (32,32))
+        img.set_colorkey(BLACK)
+        coins_anim.append(img)
     assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
@@ -101,7 +108,51 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.rect.top = 0
             
+#classe mobs (OPONENTS):
+class Mobs(pygame.sprite.Sprite):
+    def __init__(self,mobs_sprite):
+        
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.frame = 0
+        self.image = self.mobs_sprite[self.frame]
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(mobs_sprite[self.frame],(40,55))
+        
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        #Centraliza no baixo da tela 
+        self.rect.centerx = random.randint(70 , WIDTH-70)
+        
+        self.rect.bottom = random.randint(-2000, -500)
+        
+        self.speed_up = False
+        
+        self.last_update = pygame.time.get_ticks()
+        
+        
+    def update(self):
+        self.rect.bottom += road_speed
+        
+        
+        if self.rect.top >= HEIGHT:
+            #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
+            self.rect.y = random.randint(-2000, -500)
+            self.rect.centerx = random.randint(70 , WIDTH-70)
+            self.rect.top = 0
             
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                self.speed_up = True
+                self.last_update = pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
+        
         
 class Tiles(pygame.sprite.Sprite):
     #Construtor de classe
