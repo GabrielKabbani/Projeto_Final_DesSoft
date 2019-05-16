@@ -21,6 +21,11 @@ with open('historico_de_player.txt','r') as arquivo:
 dados = json.loads(texto)
 
 
+#Inicia pygame
+
+pygame.init()
+pygame.mixer.init()
+
 #Cria assets
 
 def load_assets (img_dir, snd_dir):
@@ -157,6 +162,56 @@ class Cerca(pygame.sprite.Sprite):
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT
 
+class Lama(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, lama_img):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = lama_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(lama_img,(70,70))
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.centerx = random.randint(70 , WIDTH-70)
+        
+        self.rect.bottom = random.randint(-2000, -500)
+        
+        #Deixa drag do carro falso ate passar pela lama
+        self.drag = False
+        
+        #Cria variavel para pegar tick
+        self.last_update = pygame.time.get_ticks()
+        
+    def update(self):
+        self.rect.bottom += road_speed
+        
+        if self.rect.top > HEIGHT:
+            #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
+            self.rect.y = random.randint(-2000, -500)
+            self.rect.centerx = random.randint(70 , WIDTH-70)
+            
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                self.drag = True
+                speed_boost.speed_up = False
+                self.last_update = pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
+        
+        time_elapsed = now - self.last_update
+        
+        if time_elapsed > 1000:
+            self.drag = False
+                    
+
+
 class Boost(pygame.sprite.Sprite):
     #Construtor de classe
     def __init__ (self, boost_img):
@@ -194,9 +249,10 @@ class Boost(pygame.sprite.Sprite):
             self.rect.centerx = random.randint(70 , WIDTH-70)
 
         
-        if self.speed_up:
-            self.last_update = pygame.time.get_ticks()
-            
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                self.speed_up = True
+                self.last_update = pygame.time.get_ticks()
         now = pygame.time.get_ticks()
         
         time_elapsed = now - self.last_update
@@ -258,6 +314,12 @@ class Coins(pygame.sprite.Sprite):
         if self.rect.y > HEIGHT:
             self.rect.x = random.randint(70, WIDTH-70)
             self.rect.y = random.randint(-2000, -500)
+        
+        #Aciona pega moeda
+        if self.rect.right >= player.rect.left and self.rect.left <= player.rect.right:
+            if self.rect.top <= player.rect.bottom and self.rect.bottom >= player.rect.top:
+                coin.rect.y = random.randint(-2000, -500)
+                player.cash += 10
 
 
         
@@ -280,120 +342,117 @@ class Score(pygame.sprite.Sprite):
         self.rect.left = 5
     
             
+#Tamanho da tela
+screen = pygame.display.set_mode((WIDTH,HEIGHT))
+
+#Display nome do jogo
+pygame.display.set_caption("Ride Along")
+        
+#Variavel de relogio:
+clock = pygame.time.Clock()
+
+#Carrega os assets 
+assets = load_assets(img_dir, snd_dir)
+
+# Carrega a fonte para desenhar o score.
+score_font = assets["score_font"]
+
+#Carrega fundo
+background = assets["background"]
+background_rect = background.get_rect()
+
+#Cria a variavel que contem classe do player
+score_board = Score(assets["score_board"])
+
+player = Player(assets['player_img'])
+
+coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
+
+#lama = Lama(assets['lama'])
+
+speed_boost = Boost(assets['speed_boost'])
+#Adiciona sprite 
+all_sprites = pygame.sprite.Group()
+
+tiles_sprites = pygame.sprite.Group()
+
+cerca_sprites = pygame.sprite.Group()
 
 
-def tela_do_jogo(screen):    
-    #Variavel de relogio:
-    clock = pygame.time.Clock()
+tile_y = 0
 
-    #Carrega os assets 
-    assets = load_assets(img_dir, snd_dir)
+for i in range(7):
+    i = Tiles(assets['tiles'], tile_y)
+    tile_y -= 100
+    tiles_sprites.add(i)
 
-    # Carrega a fonte para desenhar o score.
-    score_font = assets["score_font"]
+cerca_y = 0
 
-    #Carrega fundo
-    background = assets["background"]
-    background_rect = background.get_rect()
-
-    #Cria a variavel que contem classes
-    score_board = Score(assets["score_board"])
-
-    player = Player(assets['player_img'])
-
-    coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
-
-    speed_boost = Boost(assets['speed_boost'])
-    #Adiciona sprite 
-    all_sprites = pygame.sprite.Group()
-
-    tiles_sprites = pygame.sprite.Group()
-
-    cerca_sprites = pygame.sprite.Group()
-
-    #Loops que criam plano de fundo
-    tile_y = 0
-
-    for i in range(7):
-        i = Tiles(assets['tiles'], tile_y)
-        tile_y -= 100
-        tiles_sprites.add(i)
-
-    cerca_y = 0
-
-    for i in range(12):
-        i = Cerca(assets['cerca'], cerca_y, 40)
-        ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
-        cerca_y -= 60
-        cerca_sprites.add(i)
-        cerca_sprites.add(ii)
+for i in range(12):
+    i = Cerca(assets['cerca'], cerca_y, 40)
+    ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
+    cerca_y -= 60
+    cerca_sprites.add(i)
+    cerca_sprites.add(ii)
 
 
-    all_sprites.add(cerca_sprites)
-    all_sprites.add(tiles_sprites)
-    all_sprites.add(speed_boost)
-    all_sprites.add(coin)
-    all_sprites.add(player)
-    all_sprites.add(score_board)
+all_sprites.add(cerca_sprites)
+all_sprites.add(tiles_sprites)
+all_sprites.add(speed_boost)
+#all_sprites.add(lama)
+all_sprites.add(coin)
+all_sprites.add(player)
+all_sprites.add(score_board)
 
     
-    PLAYING = 0
-    DONE = 2
 
-    state = PLAYING
-    while state != DONE:
+#Para nao travarmos:
+try:
+    
+    running = True
+    while running:
         #Ajusta velocidade de jogo
         clock.tick(FPS)
         
-        if state == PLAYING:
-            # Processa os eventos
-            for event in pygame.event.get():
+        
+        # Processa os eventos
+        for event in pygame.event.get():
             
-                # Verifica se foi fechado
-                if event.type == pygame.QUIT:
-                    state = DONE
+            # Verifica se foi fechado
+            if event.type == pygame.QUIT:
+                running = False
                 
-                #Verifica se clica tecla
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        player.speedx = -3
-                    if event.key == pygame.K_RIGHT:
-                        player.speedx = 3
-                    if event.key == pygame.K_UP:
-                        player.speedy = -5
+            #Verifica se clica tecla
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player.speedx = -3
+                if event.key == pygame.K_RIGHT:
+                    player.speedx = 3
+                if event.key == pygame.K_UP:
+                    player.speedy = -5
                     
             
-                #Verifica se tecla soltou
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT:
-                        player.speedx = 0
-                    if event.key == pygame.K_RIGHT:
-                        player.speedx = 0
-                    if event.key == pygame.K_UP:
-                        player.speedy = road_speed
-                
-                #Colisao com o boost
-                if speed_boost.rect.right >= player.rect.left and speed_boost.rect.left <= player.rect.right:
-                    if speed_boost.rect.top <= player.rect.bottom and speed_boost.rect.bottom >= player.rect.top:
-                        speed_boost.speed_up = True
-                
-                #Colisao com a moeda
-                if coin.rect.right >= player.rect.left and coin.rect.left <= player.rect.right:
-                    if coin.rect.top <= player.rect.bottom and coin.rect.bottom >= player.rect.top:
-                        coin.rect.y = random.randint(-2000, -500)
-                        player.cash += 10
+            #Verifica se tecla soltou
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    player.speedx = 0
+                if event.key == pygame.K_RIGHT:
+                    player.speedx = 0
+                if event.key == pygame.K_UP:
+                    player.speedy = road_speed
+            
                 
             
                 
         #Atualiza sprites depois de cada evento
         all_sprites.update()
         
-        if state == PLAYING:
-            if speed_boost.speed_up:
-                road_speed = 9
-            else:
-                road_speed = 3
-    
+        if speed_boost.speed_up:
+            road_speed = 9
+        else: 
+            road_speed = 3
+        
+            
             
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
@@ -416,4 +475,5 @@ def tela_do_jogo(screen):
         with open('historico_de_player.txt','w') as arquivo:
             arquivo.write(json_dados)
         
-    return QUIT
+finally:
+    pygame.quit()

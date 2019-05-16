@@ -9,9 +9,9 @@ import pygame
 import random
 from os import path
 
-from config import 
+from config import img_dir, BLACK, FPS, GAME, QUIT
 
-def init_screen(screen):
+def tela_inicial(screen):
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
 
