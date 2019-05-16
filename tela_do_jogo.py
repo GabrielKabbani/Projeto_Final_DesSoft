@@ -12,7 +12,7 @@ import time
 import random
 import json
 
-from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, QUIT, road_speed
+from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, QUIT
 
 #Abre historico de jogador
 with open('historico_de_player.txt','r') as arquivo:
@@ -50,7 +50,7 @@ def load_assets (img_dir, snd_dir):
 #Classe player
 class Player(pygame.sprite.Sprite):
     #Construtor de classe
-    def __init__ (self, player_img):
+    def __init__ (self, player_img, road_speed):
         #Construtor de classe pai
         pygame.sprite.Sprite.__init__(self)
         
@@ -74,9 +74,12 @@ class Player(pygame.sprite.Sprite):
         #Quantidade de dinheiro inicial
         self.cash = dados['player_coins']
         
+        #Variavel road_speed
+        self.road_speed = road_speed
+        
         #Velocidade 
         self.speedx = 0
-        self.speedy = road_speed
+        self.speedy = self.road_speed
         
     def update(self):
         self.rect.x += self.speedx
@@ -100,7 +103,7 @@ class Player(pygame.sprite.Sprite):
         
 class Tiles(pygame.sprite.Sprite):
     #Construtor de classe
-    def __init__ (self, tiles_img, tiles_y):
+    def __init__ (self, tiles_img, tiles_y, road_speed):
         #Construtor de classe pai
         pygame.sprite.Sprite.__init__(self)
         
@@ -120,9 +123,12 @@ class Tiles(pygame.sprite.Sprite):
         
         self.rect.bottom = tiles_y
         
+        #Velocidade da tela
+        self.road_speed = road_speed
+        
         
     def update(self):
-        self.rect.y += road_speed
+        self.rect.y += self.road_speed
         
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT - 30
@@ -130,7 +136,7 @@ class Tiles(pygame.sprite.Sprite):
 
 class Cerca(pygame.sprite.Sprite):
     #Construtor de classe
-    def __init__ (self, cerca_img, cerca_y, cerca_x):
+    def __init__ (self, cerca_img, cerca_y, cerca_x, road_speed):
         #Construtor de classe pai
         pygame.sprite.Sprite.__init__(self)
         
@@ -150,16 +156,19 @@ class Cerca(pygame.sprite.Sprite):
         
         self.rect.bottom = cerca_y
         
+        #velocidade de cerca
+        self.road_speed = road_speed
+        
     
     def update(self):
-        self.rect.y += road_speed
+        self.rect.y += self.road_speed
         
         if self.rect.top >= HEIGHT:
             self.rect.bottom = self.rect.top - HEIGHT
 
 class Boost(pygame.sprite.Sprite):
     #Construtor de classe
-    def __init__ (self, boost_img):
+    def __init__ (self, boost_img, road_speed):
         #Construtor de classe pai
         pygame.sprite.Sprite.__init__(self)
         
@@ -183,19 +192,18 @@ class Boost(pygame.sprite.Sprite):
         
         self.last_update = pygame.time.get_ticks()
         
+        #Velocidade de tela
+        self.road_speed = road_speed
+        
         
     def update(self):
-        self.rect.bottom += road_speed
+        self.rect.bottom += self.road_speed
         
         
         if self.rect.top >= HEIGHT:
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.y = random.randint(-2000, -500)
             self.rect.centerx = random.randint(70 , WIDTH-70)
-
-        
-        if self.speed_up:
-            self.last_update = pygame.time.get_ticks()
             
         now = pygame.time.get_ticks()
         
@@ -208,7 +216,7 @@ class Boost(pygame.sprite.Sprite):
 
 class Coins(pygame.sprite.Sprite):
     #Construtor de classe.
-    def __init__ (self, center, coins_anim):
+    def __init__ (self, center, coins_anim, road_speed):
         #Construtor de classe pai.
         pygame.sprite.Sprite.__init__(self)
         
@@ -228,9 +236,12 @@ class Coins(pygame.sprite.Sprite):
         #Controlle de ticks da animacao 1 tick = 1 milisegundo
         self.frame_ticks = 100
         
+        #Velocidade da tela
+        self.road_speed = road_speed
+        
     
     def update(self):
-        self.rect.y += road_speed
+        self.rect.y += self.road_speed
         #Verifica tick atual.
         now = pygame.time.get_ticks()
         
@@ -282,7 +293,10 @@ class Score(pygame.sprite.Sprite):
             
 
 
-def tela_do_jogo(screen):    
+def tela_do_jogo(screen):
+    
+    road_speed = 3 #Velocidade do carro
+
     #Variavel de relogio:
     clock = pygame.time.Clock()
 
@@ -298,12 +312,14 @@ def tela_do_jogo(screen):
 
     #Cria a variavel que contem classes
     score_board = Score(assets["score_board"])
+    
 
-    player = Player(assets['player_img'])
+    player = Player(assets['player_img'], road_speed)
 
-    coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
+    coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'], road_speed)
 
-    speed_boost = Boost(assets['speed_boost'])
+    speed_boost = Boost(assets['speed_boost'], road_speed)
+    
     #Adiciona sprite 
     all_sprites = pygame.sprite.Group()
 
@@ -315,15 +331,15 @@ def tela_do_jogo(screen):
     tile_y = 0
 
     for i in range(7):
-        i = Tiles(assets['tiles'], tile_y)
+        i = Tiles(assets['tiles'], tile_y, road_speed)
         tile_y -= 100
         tiles_sprites.add(i)
 
     cerca_y = 0
 
     for i in range(12):
-        i = Cerca(assets['cerca'], cerca_y, 40)
-        ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40)
+        i = Cerca(assets['cerca'], cerca_y, 40, road_speed)
+        ii = Cerca(assets['cerca'], cerca_y, WIDTH - 40, road_speed)
         cerca_y -= 60
         cerca_sprites.add(i)
         cerca_sprites.add(ii)
@@ -362,7 +378,7 @@ def tela_do_jogo(screen):
                     if event.key == pygame.K_UP:
                         player.speedy = -5
                     
-            
+
                 #Verifica se tecla soltou
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -370,29 +386,36 @@ def tela_do_jogo(screen):
                     if event.key == pygame.K_RIGHT:
                         player.speedx = 0
                     if event.key == pygame.K_UP:
-                        player.speedy = road_speed
+                        player.speedy = player.road_speed
                 
                 #Colisao com o boost
-                if speed_boost.rect.right >= player.rect.left and speed_boost.rect.left <= player.rect.right:
-                    if speed_boost.rect.top <= player.rect.bottom and speed_boost.rect.bottom >= player.rect.top:
-                        speed_boost.speed_up = True
+            boost_on = pygame.sprite.collide_rect(player, speed_boost)
+            if boost_on:
+                speed_boost.speed_up = True
+                speed_boost.last_update = pygame.time.get_ticks()
                 
-                #Colisao com a moeda
-                if coin.rect.right >= player.rect.left and coin.rect.left <= player.rect.right:
-                    if coin.rect.top <= player.rect.bottom and coin.rect.bottom >= player.rect.top:
-                        coin.rect.y = random.randint(-2000, -500)
-                        player.cash += 10
+            #Colisao com a moeda
+            get_coin = pygame.sprite.collide_rect(player, coin)
+            if get_coin:
+                coin.rect.y = random.randint(-2000, -500)
+                player.cash += 10
                 
-            
-                
-        #Atualiza sprites depois de cada evento
-        all_sprites.update()
         
         if state == PLAYING:
             if speed_boost.speed_up:
                 road_speed = 9
+                
             else:
                 road_speed = 3
+                
+        #Atualoza road_speed
+        for sp in all_sprites:
+            sp.road_speed = road_speed
+            
+        #Atualiza sprites depois de cada evento
+        all_sprites.update()
+        
+        
     
             
         #Cada loop redesenha os sprites

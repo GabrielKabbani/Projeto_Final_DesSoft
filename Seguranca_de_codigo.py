@@ -322,7 +322,7 @@ class Coins(pygame.sprite.Sprite):
                 player.cash += 10
 
 
-        
+
 class Score(pygame.sprite.Sprite):
     #Construtor de classe
     def __init__ (self, score_img):
@@ -452,8 +452,7 @@ try:
         else: 
             road_speed = 3
         
-            
-            
+
         #Cada loop redesenha os sprites
         screen.fill(BLACK)
         screen.blit(background, background_rect)
