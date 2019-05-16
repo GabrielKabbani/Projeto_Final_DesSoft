@@ -409,9 +409,8 @@ player = Player(assets['player_img'])
 
 coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'])
 
-#lama = Lama(assets['lama'])
-
 speed_boost = Boost(assets['speed_boost'])
+
 #Adiciona sprite 
 all_sprites = pygame.sprite.Group()
 
@@ -447,7 +446,6 @@ for i in assets["mobs"]:
 all_sprites.add(cerca_sprites)
 all_sprites.add(tiles_sprites)
 all_sprites.add(speed_boost)
-#all_sprites.add(lama)
 all_sprites.add(coin)
 all_sprites.add(player)
 all_sprites.add(mobs_sprites)
