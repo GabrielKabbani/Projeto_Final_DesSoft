@@ -1,3 +1,6 @@
+<<<<<<< HEAD
 {
     "player_coins": 740
 }
+=======
+>>>>>>> 0a4bf33844c3b90bb0e82bdd67eee3791cebce2e
