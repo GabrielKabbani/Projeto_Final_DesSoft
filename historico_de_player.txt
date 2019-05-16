@@ -1,3 +1,0 @@
-{
-    "player_coins": 800
-}
