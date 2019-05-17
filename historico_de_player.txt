@@ -1,3 +1,12 @@
+<<<<<<< HEAD
 {
     "player_coins": 1040
+=======
+{
+<<<<<<< HEAD
+    "player_coins": 920
+=======
+    "player_coins": 1040
+>>>>>>> befbaebd76b5e7f6afa03da5243bdc24b65948bb
+>>>>>>> cb540f35c403b6026bbe0a77b68b3d776aeafcf1
 }
