@@ -12,7 +12,7 @@ import time
 import random
 import json
 
-from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, QUIT
+from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, INIT
 
 #Abre historico de jogador
 with open('historico_de_player.txt','r') as arquivo:
@@ -41,6 +41,12 @@ def load_assets (img_dir, snd_dir):
         img.set_colorkey(BLACK)
         coins_anim.append(img)
     assets['coin'] = coins_anim
+    mobs_array=[]
+    for i in range(1,5):
+        filename = "mob{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        mobs_array.append(img)
+    assets['mobs'] = mobs_array 
     return assets
 
 
@@ -289,6 +295,37 @@ class Score(pygame.sprite.Sprite):
         
         self.rect.top = 5
         self.rect.left = 5
+
+#classe mobs (OPONENTS):
+class Mobs(pygame.sprite.Sprite):
+    def __init__(self, mobs_sprite, road_speed):
+        
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.image = mobs_sprite
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(mobs_sprite,(40,55))
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        #Deixa transparente
+        self.image.set_colorkey(BLACK)
+        
+        #Centraliza no baixo da tela 
+        self.rect.centerx = random.randint(70 , WIDTH-70)
+        
+        self.rect.bottom = random.randint(-2000, -500)
+        
+        self.road_speed = road_speed
+        
+    def update(self):
+        self.rect.bottom += self.road_speed + 3
+        
+        if self.rect.top >= HEIGHT:
+            #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
+            self.rect.bottom = random.randint(-2000, -500)
     
             
 
@@ -326,8 +363,10 @@ def tela_do_jogo(screen):
     tiles_sprites = pygame.sprite.Group()
 
     cerca_sprites = pygame.sprite.Group()
+    
+    mobs_sprites = pygame.sprite.Group()
 
-    #Loops que criam plano de fundo
+    #Loops que criam plano de fundo e mobs
     tile_y = 0
 
     for i in range(7):
@@ -343,12 +382,17 @@ def tela_do_jogo(screen):
         cerca_y -= 60
         cerca_sprites.add(i)
         cerca_sprites.add(ii)
+    
+    for i in assets["mobs"]:
+        ii = Mobs(i, road_speed)
+        mobs_sprites.add(ii)
 
 
     all_sprites.add(cerca_sprites)
     all_sprites.add(tiles_sprites)
     all_sprites.add(speed_boost)
     all_sprites.add(coin)
+    all_sprites.add(mobs_sprites)
     all_sprites.add(player)
     all_sprites.add(score_board)
 
@@ -400,6 +444,11 @@ def tela_do_jogo(screen):
                 coin.rect.y = random.randint(-2000, -500)
                 player.cash += 10
                 
+            #Colisao com os mobs
+            hit_mobs = pygame.sprite.spritecollide(player, mobs_sprites, False, pygame.sprite.collide_rect)
+            if hit_mobs:
+                state = DONE
+                
         
         if state == PLAYING:
             if speed_boost.speed_up:
@@ -439,4 +488,4 @@ def tela_do_jogo(screen):
         with open('historico_de_player.txt','w') as arquivo:
             arquivo.write(json_dados)
         
-    return QUIT
+    return INIT
