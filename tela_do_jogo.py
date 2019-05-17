@@ -34,6 +34,7 @@ def load_assets (img_dir, snd_dir):
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     coins_anim = []
+    explosao=[]
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
         img = pygame.image.load(path.join(img_dir, filename)).convert()
@@ -47,6 +48,13 @@ def load_assets (img_dir, snd_dir):
         img = pygame.image.load(path.join(img_dir, filename)).convert()
         mobs_array.append(img)
     assets['mobs'] = mobs_array 
+    for i in range(9):
+        filename = 'regularExplosion0{}.png'.format(i)
+        imagem = pygame.image.load(path.join(img_dir, filename)).convert()
+        imagem = pygame.transform.scale(img, (32, 32))        
+        imagem.set_colorkey(BLACK)
+        explosao.append(imagem)
+    assets["explosao"] = explosao
     return assets
 
 
@@ -327,7 +335,45 @@ class Mobs(pygame.sprite.Sprite):
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.bottom = random.randint(-2000, -500)
     
-            
+class Explosion(pygame.sprite.Sprite):
+
+
+    def __init__(self, center, explosao):
+
+        pygame.sprite.Sprite.__init__(self)
+
+        self.explosao = explosao
+
+        self.last_update = pygame.time.get_ticks()
+
+        self.frame_ticks = 70
+
+        self.frame = 0
+        self.image = self.explosao[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+
+
+
+    def update(self):
+
+        now = pygame.time.get_ticks()
+        
+        elapsed_ticks = now - self.last_update
+
+        if elapsed_ticks > self.frame_ticks:
+
+            self.last_update = now
+
+            self.frame += 1
+
+            if self.frame == len(self.explosao):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = self.explosao[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center          
 
 
 def tela_do_jogo(screen):
@@ -447,7 +493,10 @@ def tela_do_jogo(screen):
             #Colisao com os mobs
             hit_mobs = pygame.sprite.spritecollide(player, mobs_sprites, False, pygame.sprite.collide_rect)
             if hit_mobs:
+                explosao = Explosion(player.rect.center, assets["explosao"])
+                all_sprites.add(explosao)
                 state = DONE
+                
                 
         
         if state == PLAYING:
