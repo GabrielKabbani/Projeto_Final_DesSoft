@@ -34,7 +34,6 @@ def load_assets (img_dir, snd_dir):
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     coins_anim = []
-    explosao=[]
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
         img = pygame.image.load(path.join(img_dir, filename)).convert()
@@ -48,13 +47,14 @@ def load_assets (img_dir, snd_dir):
         img = pygame.image.load(path.join(img_dir, filename)).convert()
         mobs_array.append(img)
     assets['mobs'] = mobs_array 
+    explosion_anim = []
     for i in range(9):
         filename = 'regularExplosion0{}.png'.format(i)
-        imagem = pygame.image.load(path.join(img_dir, filename)).convert()
-        imagem = pygame.transform.scale(img, (32, 32))        
-        imagem.set_colorkey(BLACK)
-        explosao.append(imagem)
-    assets["explosao"] = explosao
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (32, 32))        
+        img.set_colorkey(BLACK)
+        explosion_anim.append(img)
+    assets["explosion_anim"] = explosion_anim
     return assets
 
 
@@ -335,45 +335,56 @@ class Mobs(pygame.sprite.Sprite):
             #Faz com que spawn longe da tela para controlar melhor a quantidade de spawn
             self.rect.bottom = random.randint(-2000, -500)
     
+# Classe que representa uma explosão de meteoro
 class Explosion(pygame.sprite.Sprite):
 
-
-    def __init__(self, center, explosao):
-
+    # Construtor da classe.
+    def __init__(self, center, explosion_anim, state):
+        # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
 
-        self.explosao = explosao
+        # Carrega a animação de explosão
+        self.explosion_anim = explosion_anim
 
-        self.last_update = pygame.time.get_ticks()
-
-        self.frame_ticks = 70
-
+        # Inicia o processo de animação colocando a primeira imagem na tela.
         self.frame = 0
-        self.image = self.explosao[self.frame]
+        self.image = self.explosion_anim[self.frame]
         self.rect = self.image.get_rect()
         self.rect.center = center
 
+        # Guarda o tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
 
+        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
+        self.frame_ticks = 50
 
     def update(self):
-
+        # Verifica o tick atual.
         now = pygame.time.get_ticks()
-        
+
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
         elapsed_ticks = now - self.last_update
 
+        # Se já está na hora de mudar de imagem...
         if elapsed_ticks > self.frame_ticks:
 
+            # Marca o tick da nova imagem.
             self.last_update = now
 
+            # Avança um quadro.
             self.frame += 1
 
-            if self.frame == len(self.explosao):
+            # Verifica se já chegou no final da animação.
+            if self.frame == len(self.explosion_anim):
+                # Se sim, tchau explosão!
+                state = DONE
                 self.kill()
             else:
+                # Se ainda não chegou ao fim da explosão, troca de imagem.
                 center = self.rect.center
-                self.image = self.explosao[self.frame]
+                self.image = self.explosion_anim[self.frame]
                 self.rect = self.image.get_rect()
-                self.rect.center = center          
+                self.rect.center = center         
 
 
 def tela_do_jogo(screen):
@@ -493,10 +504,8 @@ def tela_do_jogo(screen):
             #Colisao com os mobs
             hit_mobs = pygame.sprite.spritecollide(player, mobs_sprites, False, pygame.sprite.collide_rect)
             if hit_mobs:
-                explosao = Explosion(player.rect.center, assets["explosao"])
+                explosao = Explosion(player.rect.center, assets["explosion_anim"], state)
                 all_sprites.add(explosao)
-                state = DONE
-                
                 
         
         if state == PLAYING:
