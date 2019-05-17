@@ -24,17 +24,25 @@ def tela_inicial(screen):
         
         # Ajusta a velocidade do jogo.
         clock.tick(FPS)
-        
+                      
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
+            
+                
             # Verifica se foi fechado.
             if event.type == pygame.QUIT:
                 state = QUIT
                 running = False
-
+                
             if event.type == pygame.KEYUP:
-                state = GAME
-                running = False
+                if event.key == pygame.K_q:
+                    state = QUIT
+                    running = False
+                    
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_p:
+                    state = GAME
+                    running = False
                     
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
