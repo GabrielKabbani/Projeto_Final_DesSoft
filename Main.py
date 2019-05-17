@@ -19,7 +19,7 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Nome do jogo
-pygame.display.set_caption("Navinha")
+pygame.display.set_caption("Ride Along")
 
 # Comando para evitar travamentos.
 try:

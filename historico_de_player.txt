@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
     "player_coins": 920
+=======
+    "player_coins": 1040
+>>>>>>> befbaebd76b5e7f6afa03da5243bdc24b65948bb
 }
