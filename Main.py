@@ -31,7 +31,7 @@ try:
         elif state == GAME:
             state = tela_do_jogo(screen)
         elif state == GARAGEM:
-            state = tela_garagem(screen)
+            state, car_selected = tela_garagem(screen)
         else:
             state = QUIT
 finally:

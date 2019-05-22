@@ -12,7 +12,8 @@ import time
 import random
 import json
 
-from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, INIT
+from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, FPS, INIT
+
 
 #Abre historico de jogador
 with open('historico_de_player.txt','r') as arquivo:
@@ -25,7 +26,13 @@ dados = json.loads(texto)
 
 def load_assets (img_dir, snd_dir):
     assets = {}
-    assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
+    #assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
+    player_img = []
+    for i in range (1,7):
+        filename = "player_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        player_img.append(img)
+    assets['player_img'] = player_img
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
     assets['lama'] = pygame.image.load(path.join(img_dir,'lama.png')).convert()
@@ -396,6 +403,9 @@ def tela_do_jogo(screen):
 
     #Carrega os assets 
     assets = load_assets(img_dir, snd_dir)
+    
+    #Carrega skin de player
+    player_img = assets['player_img']
 
     # Carrega a fonte para desenhar o score.
     score_font = assets["score_font"]
@@ -407,8 +417,8 @@ def tela_do_jogo(screen):
     #Cria a variavel que contem classes
     score_board = Score(assets["score_board"])
     
-
-    player = Player(assets['player_img'], road_speed)
+    
+    player = Player(player_img[car_selected - 1], road_speed)
 
     coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'], road_speed)
 
