@@ -531,7 +531,7 @@ def tela_do_jogo(screen):
         all_sprites.draw(screen)
         
         # Desenha o score
-        text_surface = score_font.render("Coins:{0}".format(player.cash), True, YELLOW)
+        text_surface = score_font.render("Score:{0}".format(player.cash), True, YELLOW)
         text_rect = text_surface.get_rect()
         text_rect.left = (15)
         text_rect.top = (22)

@@ -9,14 +9,14 @@ import pygame
 import random
 from os import path
 
-from config import img_dir, BLACK, FPS, GAME, QUIT, GARAGEM
+from config import img_dir, BLACK, FPS, GAME, QUIT, INIT
 
-def tela_inicial(screen):
+def tela_garagem(screen):
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
 
     # Carrega o fundo da tela inicial
-    background = pygame.image.load(path.join(img_dir, 'inicio.png')).convert()
+    background = pygame.image.load(path.join(img_dir, 'garagem.png')).convert()
     background_rect = background.get_rect()
 
     running = True
@@ -35,19 +35,11 @@ def tela_inicial(screen):
                 running = False
                 
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_q:
-                    state = QUIT
+                if event.key == pygame.K_ESCAPE:
+                    state = INIT
                     running = False
                     
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_p:
-                    state = GAME
-                    running = False
             
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_g:
-                    state = GARAGEM
-                    running = False
                     
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
