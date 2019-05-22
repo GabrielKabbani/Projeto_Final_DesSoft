@@ -15,18 +15,13 @@ import json
 from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, FPS, INIT
 
 
-#Abre historico de jogador
-with open('historico_de_player.txt','r') as arquivo:
-    texto = arquivo.read()
-    
-dados = json.loads(texto)
+
 
 
 #Cria assets
 
 def load_assets (img_dir, snd_dir):
     assets = {}
-    #assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
     player_img = []
     for i in range (1,7):
         filename = "player_{}.png".format(i)
@@ -396,12 +391,18 @@ class Explosion(pygame.sprite.Sprite):
 
 def tela_do_jogo(screen):
     
+    #Abre historico de jogador
+    with open('historico_de_player.txt','r') as arquivo:
+        texto = arquivo.read()
+    
+    dados = json.loads(texto)
+    
     road_speed = 3 #Velocidade do carro
 
     #Variavel de relogio:
     clock = pygame.time.Clock()
 
-    #Carrega os assets 
+    #Carrega os assets
     assets = load_assets(img_dir, snd_dir)
     
     #Carrega skin de player
