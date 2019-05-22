@@ -384,7 +384,6 @@ class Explosion(pygame.sprite.Sprite):
             # Verifica se já chegou no final da animação.
             if self.frame == len(self.explosion_anim):
                 # Se sim, tchau explosão!
-                state = DONE
                 self.kill()
             else:
                 # Se ainda não chegou ao fim da explosão, troca de imagem.
@@ -406,6 +405,7 @@ def tela_do_jogo(screen):
     
     #Carrega skin de player
     player_img = assets['player_img']
+    car_selected = dados["car_selected"]
 
     # Carrega a fonte para desenhar o score.
     score_font = assets["score_font"]
@@ -516,6 +516,8 @@ def tela_do_jogo(screen):
             if hit_mobs:
                 explosao = Explosion(player.rect.center, assets["explosion_anim"], state)
                 all_sprites.add(explosao)
+                state = DONE
+                
                 
         
         if state == PLAYING:

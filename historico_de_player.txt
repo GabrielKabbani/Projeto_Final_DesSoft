@@ -1,3 +1,4 @@
 {
-    "player_coins": 90
+    "car_selected": 6,
+    "player_coins": 100
 }

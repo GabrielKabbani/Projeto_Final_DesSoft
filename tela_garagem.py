@@ -8,6 +8,7 @@ Created on Wed May 15 11:03:39 2019
 import pygame
 import random
 from os import path
+import json
 
 from config import fnt_dir, img_dir, BLACK, YELLOW, FPS, GAME, QUIT, INIT
 
@@ -21,8 +22,13 @@ def tela_garagem(screen):
     
     score_font = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     
-    car_selected = 0
-
+    with open('historico_de_player.txt','r') as arquivo:
+        texto = arquivo.read()
+    
+    dados = json.loads(texto)
+    
+    car_selected = dados["car_selected"]
+    
     running = True
     while running:
         
@@ -69,5 +75,11 @@ def tela_garagem(screen):
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
-
-    return state, car_selected
+        
+        
+        dados["car_selected"] = car_selected
+        json_dados = json.dumps(dados, sort_keys = True, indent = 4)
+        with open('historico_de_player.txt','w') as arquivo:
+            arquivo.write(json_dados)
+            
+    return state
