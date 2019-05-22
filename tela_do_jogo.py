@@ -40,6 +40,7 @@ def load_assets (img_dir, snd_dir):
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
+    assets["top_score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 8)
     coins_anim = []
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
@@ -93,7 +94,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 40
         
         #Quantidade de dinheiro inicial
-        self.cash = dados['player_coins']
+        self.cash = 0
         
         #Variavel road_speed
         self.road_speed = road_speed
@@ -405,10 +406,11 @@ def tela_do_jogo(screen):
     
     #Carrega skin de player
     player_img = assets['player_img']
-    car_selected = dados["car_selected"]
+    car_selected = dados["car_selected"] - 1
 
     # Carrega a fonte para desenhar o score.
     score_font = assets["score_font"]
+    top_score_font = assets["top_score_font"]
 
     #Carrega fundo
     background = assets["background"]
@@ -418,7 +420,7 @@ def tela_do_jogo(screen):
     score_board = Score(assets["score_board"])
     
     
-    player = Player(player_img[car_selected - 1], road_speed)
+    player = Player(player_img[car_selected], road_speed)
 
     coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'], road_speed)
 
@@ -546,16 +548,23 @@ def tela_do_jogo(screen):
         text_surface = score_font.render("Score:{0}".format(player.cash), True, YELLOW)
         text_rect = text_surface.get_rect()
         text_rect.left = (15)
-        text_rect.top = (22)
+        text_rect.top = (18)
+        screen.blit(text_surface, text_rect)
+        
+        text_surface = top_score_font.render("Top Score:{0}".format(dados['top_score']), True, YELLOW)
+        text_rect = text_surface.get_rect()
+        text_rect.left = (13)
+        text_rect.top = (38)
         screen.blit(text_surface, text_rect)
         
         #Depois de desenhar inverte o display
         pygame.display.flip()
         
         #Escreve cash do jogador na biblio json
-        dados['player_coins'] = player.cash
-        json_dados = json.dumps(dados, sort_keys = True, indent = 4)
-        with open('historico_de_player.txt','w') as arquivo:
-            arquivo.write(json_dados)
+        if dados['top_score'] < player.cash:    
+            dados['top_score'] = player.cash
+            json_dados = json.dumps(dados, sort_keys = True, indent = 4)
+            with open('historico_de_player.txt','w') as arquivo:
+                arquivo.write(json_dados)
         
     return INIT
