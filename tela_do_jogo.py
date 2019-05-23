@@ -12,20 +12,22 @@ import time
 import random
 import json
 
-from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, RED, FPS, INIT
+from config import img_dir, snd_dir, fnt_dir, WIDTH, HEIGHT, BLACK, YELLOW, FPS, INIT
 
-#Abre historico de jogador
-with open('historico_de_player.txt','r') as arquivo:
-    texto = arquivo.read()
-    
-dados = json.loads(texto)
+
+
 
 
 #Cria assets
 
 def load_assets (img_dir, snd_dir):
     assets = {}
-    assets['player_img'] = pygame.image.load(path.join(img_dir,"player_1.png")).convert()
+    player_img = []
+    for i in range (1,7):
+        filename = "player_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        player_img.append(img)
+    assets['player_img'] = player_img
     assets['background'] = pygame.image.load(path.join(img_dir,"Background.png")).convert()
     assets['tiles'] = pygame.image.load(path.join(img_dir,"Tile.png")).convert()
     assets['lama'] = pygame.image.load(path.join(img_dir,'lama.png')).convert()
@@ -33,6 +35,7 @@ def load_assets (img_dir, snd_dir):
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
+    assets["top_score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 8)
     coins_anim = []
     for i in range(1,7):
         filename = "coin_{}.png".format(i)
@@ -86,7 +89,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 40
         
         #Quantidade de dinheiro inicial
-        self.cash = dados['player_coins']
+        self.cash = 0
         
         #Variavel road_speed
         self.road_speed = road_speed
@@ -377,7 +380,6 @@ class Explosion(pygame.sprite.Sprite):
             # Verifica se já chegou no final da animação.
             if self.frame == len(self.explosion_anim):
                 # Se sim, tchau explosão!
-                state = DONE
                 self.kill()
             else:
                 # Se ainda não chegou ao fim da explosão, troca de imagem.
@@ -389,16 +391,27 @@ class Explosion(pygame.sprite.Sprite):
 
 def tela_do_jogo(screen):
     
+    #Abre historico de jogador
+    with open('historico_de_player.txt','r') as arquivo:
+        texto = arquivo.read()
+    
+    dados = json.loads(texto)
+    
     road_speed = 3 #Velocidade do carro
 
     #Variavel de relogio:
     clock = pygame.time.Clock()
 
-    #Carrega os assets 
+    #Carrega os assets
     assets = load_assets(img_dir, snd_dir)
+    
+    #Carrega skin de player
+    player_img = assets['player_img']
+    car_selected = dados["car_selected"] - 1
 
     # Carrega a fonte para desenhar o score.
     score_font = assets["score_font"]
+    top_score_font = assets["top_score_font"]
 
     #Carrega fundo
     background = assets["background"]
@@ -407,8 +420,8 @@ def tela_do_jogo(screen):
     #Cria a variavel que contem classes
     score_board = Score(assets["score_board"])
     
-
-    player = Player(assets['player_img'], road_speed)
+    
+    player = Player(player_img[car_selected], road_speed)
 
     coin = Coins((random.randint(70, WIDTH - 70),0),assets['coin'], road_speed)
 
@@ -506,6 +519,8 @@ def tela_do_jogo(screen):
             if hit_mobs:
                 explosao = Explosion(player.rect.center, assets["explosion_anim"], state)
                 all_sprites.add(explosao)
+                state = DONE
+                
                 
         
         if state == PLAYING:
@@ -531,19 +546,26 @@ def tela_do_jogo(screen):
         all_sprites.draw(screen)
         
         # Desenha o score
-        text_surface = score_font.render("Coins:{0}".format(player.cash), True, YELLOW)
+        text_surface = score_font.render("Score:{0}".format(player.cash), True, YELLOW)
         text_rect = text_surface.get_rect()
         text_rect.left = (15)
-        text_rect.top = (22)
+        text_rect.top = (18)
+        screen.blit(text_surface, text_rect)
+        
+        text_surface = top_score_font.render("Top Score:{0}".format(dados['top_score']), True, YELLOW)
+        text_rect = text_surface.get_rect()
+        text_rect.left = (13)
+        text_rect.top = (38)
         screen.blit(text_surface, text_rect)
         
         #Depois de desenhar inverte o display
         pygame.display.flip()
         
         #Escreve cash do jogador na biblio json
-        dados['player_coins'] = player.cash
-        json_dados = json.dumps(dados, sort_keys = True, indent = 4)
-        with open('historico_de_player.txt','w') as arquivo:
-            arquivo.write(json_dados)
+        if dados['top_score'] < player.cash:    
+            dados['top_score'] = player.cash
+            json_dados = json.dumps(dados, sort_keys = True, indent = 4)
+            with open('historico_de_player.txt','w') as arquivo:
+                arquivo.write(json_dados)
         
     return INIT

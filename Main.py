@@ -7,9 +7,10 @@ import time
 
 from os import path
 
-from config import WIDTH, HEIGHT, INIT, GAME, QUIT
+from config import WIDTH, HEIGHT, INIT, GAME, QUIT, GARAGEM
 from tela_inicial import tela_inicial
 from tela_do_jogo import tela_do_jogo
+from tela_garagem import tela_garagem
 
 # Inicialização do Pygame.
 pygame.init()
@@ -29,6 +30,8 @@ try:
             state = tela_inicial(screen)
         elif state == GAME:
             state = tela_do_jogo(screen)
+        elif state == GARAGEM:
+            state = tela_garagem(screen)
         else:
             state = QUIT
 finally:

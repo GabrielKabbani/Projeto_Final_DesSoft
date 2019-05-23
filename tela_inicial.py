@@ -9,7 +9,7 @@ import pygame
 import random
 from os import path
 
-from config import img_dir, BLACK, FPS, GAME, QUIT
+from config import img_dir, BLACK, FPS, GAME, QUIT, GARAGEM
 
 def tela_inicial(screen):
     # Variável para o ajuste de velocidade
@@ -42,6 +42,11 @@ def tela_inicial(screen):
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_p:
                     state = GAME
+                    running = False
+            
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_g:
+                    state = GARAGEM
                     running = False
                     
         # A cada loop, redesenha o fundo e os sprites

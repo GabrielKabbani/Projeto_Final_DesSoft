@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 {
     "player_coins": 60
+=======
+{
+    "car_selected": 6,
+    "top_score": 30
+>>>>>>> 5b123db523a28f3beea6c2924a5f594d4e9c4468
 }
