@@ -1,4 +1,4 @@
 {
-    "car_selected": 4,
-    "top_score": 40
+    "car_selected": 1,
+    "top_score": 0
 }
