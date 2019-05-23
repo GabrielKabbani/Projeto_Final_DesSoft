@@ -1,32 +1,3 @@
-<<<<<<< HEAD
 {
-    "player_coins": 0
+    "player_coins": 60
 }
-=======
-<<<<<<< HEAD
-{
-    "player_coins": 0
-=======
-<<<<<<< HEAD
-{
-    "player_coins": 1040
-=======
-<<<<<<< HEAD
-{
-    "player_coins": 1040
-=======
-{
-<<<<<<< HEAD
-    "player_coins": 1050
-=======
-<<<<<<< HEAD
-    "player_coins": 920
-=======
-    "player_coins": 1040
->>>>>>> befbaebd76b5e7f6afa03da5243bdc24b65948bb
->>>>>>> cb540f35c403b6026bbe0a77b68b3d776aeafcf1
->>>>>>> b1a8d7156067ab964d6b9153829d107458e38f2f
->>>>>>> 1bd10291d49b2c70c4d29d5b5a438183ce414d4d
->>>>>>> 86508cc5aed5b6df217e76b728e643e3f5ea8410
-}
->>>>>>> 65911a5cec4453bd4d7bcc697309d05a7f09bad0
