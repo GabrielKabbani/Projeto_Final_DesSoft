@@ -31,9 +31,9 @@ def load_assets (img_dir, snd_dir):
     assets['cerca'] = pygame.image.load(path.join(img_dir,'Cerca.png')).convert()
     assets['speed_boost'] = pygame.image.load(path.join(img_dir,'speed_boost.png')).convert()
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
-    assets['crash']=pygame.mixer.Sound(path.join(snd_dir, 'carcrash.wav'))
-    assets['carsound']=pygame.mixer.Sound(path.join(snd_dir, 'carsound.wav'))
-    assets['boostsound']=pygame.mixer.Sound(path.join(snd_dir, 'turbosound.wav'))
+    assets['crash'] = pygame.mixer.Sound(path.join(snd_dir, 'carcrash.wav'))
+    assets['carsound'] = pygame.mixer.Sound(path.join(snd_dir, 'carsound.wav'))
+    assets['boostsound'] = pygame.mixer.Sound(path.join(snd_dir, 'turbosound.wav'))
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     assets["top_score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 8)
     coins_anim = []
@@ -61,11 +61,6 @@ def load_assets (img_dir, snd_dir):
     return assets
 
 
-assets = load_assets(img_dir, snd_dir)
-#carrega os sons do jogo
-crash_sound=assets['crash']
-car_sound=assets['carsound']
-boost_sound=assets['boostsound']
 
 
 #Classes
@@ -411,6 +406,11 @@ def tela_do_jogo(screen):
     #Carrega os assets
     assets = load_assets(img_dir, snd_dir)
     
+    #carrega os sons do jogo
+    crash_sound=assets['crash']
+    car_sound=assets['carsound']
+    boost_sound=assets['boostsound']
+
     #Carrega skin de player
     player_img = assets['player_img']
     car_selected = dados["car_selected"] - 1

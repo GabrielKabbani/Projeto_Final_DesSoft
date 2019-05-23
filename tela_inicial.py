@@ -86,15 +86,32 @@ def tela_inicial(screen):
     grass_sprites = pygame.sprite.Group()
     
     x = 110
+    y = 350
     for i in range(1,4):
         frame = random.randint(0,4)
-        i = Grass((x,350), assets['grass'], frame)
+        i = Grass((x,y), assets['grass'], frame)
         grass_sprites.add(i)
+        y -= 13
         x += 25
     x = 110
+    y = 370
     for i in range(1,4):
         frame = random.randint(0,4)
-        i = Grass((x,370), assets['grass'], frame)
+        i = Grass((x,y), assets['grass'], frame)
+        grass_sprites.add(i)
+        y -= 13
+        x += 25
+        
+    x = 35
+    for i in range(1,4):
+        frame = random.randint(0,4)
+        i = Grass((x,530), assets['grass'], frame)
+        grass_sprites.add(i)
+        x += 25
+    x = 35
+    for i in range(1,4):
+        frame = random.randint(0,4)
+        i = Grass((x,550), assets['grass'], frame)
         grass_sprites.add(i)
         x += 25
     
