@@ -33,6 +33,7 @@ def load_assets (img_dir, snd_dir):
     assets['score_board'] = pygame.image.load(path.join(img_dir,'score_board.png')).convert()
     assets['crash'] = pygame.mixer.Sound(path.join(snd_dir, 'carcrash.wav'))
     assets['carsound'] = pygame.mixer.Sound(path.join(snd_dir, 'carsound.wav'))
+    assets['coinsound'] = pygame.mixer.Sound(path.join(snd_dir,'coinsound.wav'))
     assets['boostsound'] = pygame.mixer.Sound(path.join(snd_dir, 'turbosound.wav'))
     assets["score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 12)
     assets["top_score_font"] = pygame.font.Font(path.join(fnt_dir, "PressStart2P.ttf"), 8)
@@ -410,6 +411,7 @@ def tela_do_jogo(screen):
     crash_sound=assets['crash']
     car_sound=assets['carsound']
     boost_sound=assets['boostsound']
+    coin_sound=assets['coinsound']
 
     #Carrega skin de player
     player_img = assets['player_img']
@@ -511,12 +513,14 @@ def tela_do_jogo(screen):
                 #Colisao com o boost
             boost_on = pygame.sprite.collide_rect(player, speed_boost)
             if boost_on:
+                boost_sound.play()
                 speed_boost.speed_up = True
                 speed_boost.last_update = pygame.time.get_ticks()
                 
             #Colisao com a moeda
             get_coin = pygame.sprite.collide_rect(player, coin)
             if get_coin:
+                coin_sound.play()
                 coin.rect.y = random.randint(-2000, -500)
                 player.cash += 10
                 
