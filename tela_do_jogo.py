@@ -408,6 +408,9 @@ def tela_do_jogo(screen):
     assets = load_assets(img_dir, snd_dir)
     
     #carrega os sons do jogo
+    pygame.mixer.music.load(path.join(snd_dir, 'carsound.wav'))
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(loops=-1)
     crash_sound=assets['crash']
     car_sound=assets['carsound']
     boost_sound=assets['boostsound']
@@ -527,9 +530,11 @@ def tela_do_jogo(screen):
             #Colisao com os mobs
             hit_mobs = pygame.sprite.spritecollide(player, mobs_sprites, False, pygame.sprite.collide_rect)
             if hit_mobs:
+                pygame.mixer.music.stop()
                 crash_sound.play()
                 explosao = Explosion(player.rect.center, assets["explosion_anim"], state)
                 all_sprites.add(explosao)
+                pygame.time.wait(1500)
                 state = DONE
                 
                 
