@@ -23,6 +23,15 @@ def load_assets (img_dir):
         img.set_colorkey(BLACK)
         grass_anim.append(img)
     assets['grass'] = grass_anim
+    assets['raposa'] = pygame.image.load(path.join(img_dir,"raposa.png")).convert()
+    sleep_anim = []
+    for i in range(1,4):
+        filename = "zzz_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (35,35))
+        img.set_colorkey(BLACK)
+        sleep_anim.append(img)
+    assets['sleep'] = sleep_anim
     return assets
 
 
@@ -76,7 +85,78 @@ class Grass(pygame.sprite.Sprite):
                 self.image = self.grass_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
+
+class Raposa(pygame.sprite.Sprite):
+    #Construtor de classe
+    def __init__ (self, raposa_img):
+        #Construtor de classe pai
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Cria sprite
+        self.image = raposa_img
+        
+        #Define tamanho
+        self.image = pygame.transform.scale(raposa_img,(90,70))
+        
+        self.image.set_colorkey(BLACK)
+        
+        #Detalhe sobre posicionamento
+        self.rect = self.image.get_rect()
+        
+        self.rect.top = 250
+        self.rect.left = 300
+        
+class Sleep(pygame.sprite.Sprite):
+    #Construtor de classe.
+    def __init__ (self, center, sleep_anim):
+        #Construtor de classe pai.
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Carregar animacao de explosao.
+        self.sleep_anim = sleep_anim
+        
+        #Inicia processo de animacao.
+        self.frame = 0
+        self.image = self.sleep_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+      
+        
+        
+        #Guarda tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
+        
+        #Controlle de ticks da animacao 1 tick = 1 milisegundo
+        self.frame_ticks = 500
+        
+    
+    def update(self):
+     
+        #Verifica tick atual.
+        now = pygame.time.get_ticks()
+        
+        #Verifica quantos ticks passaram des da ultima mudanca de frame
+        elapsed_tick = now - self.last_update
+        
+        #Se ja esta na hora de mudar de imagem.
+        if (elapsed_tick > self.frame_ticks):
+            
+            #Marca o tick da nova imagem.
+            self.last_update = now
+            
+            #Verifica se acabou a animacao.
+            if self.frame == len(self.sleep_anim):
+                #Se sim mate explosao.
+                self.frame = 0
+            else:
+                center = self.rect.center
+                self.image = self.sleep_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+                #Avanca um quadro.
+                self.frame += 1
                 
+        
 def tela_inicial(screen):
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
@@ -117,7 +197,19 @@ def tela_inicial(screen):
     
     
     all_sprites = pygame.sprite.Group()
+    
+    
     all_sprites.add(grass_sprites)
+    
+    #Add raposa
+    raposa = Raposa(assets["raposa"])
+    
+    all_sprites.add(raposa)
+    
+    #Add 'zzz'
+    sleep = Sleep((300,230), assets['sleep'])
+    
+    all_sprites.add(sleep)
     
     # Carrega o fundo da tela inicial
     background = pygame.image.load(path.join(img_dir, 'inicio.png')).convert()
