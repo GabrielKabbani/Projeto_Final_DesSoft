@@ -685,6 +685,7 @@ def tela_do_jogo(screen):
             hit_mobs = pygame.sprite.spritecollide(player, mobs_sprites, False, pygame.sprite.collide_rect)
             if hit_mobs:
                 pygame.mixer.music.stop()
+                boost_sound.stop()
                 crash_sound.play()
                 explosao = Explosion(player.rect.center, assets["explosion_anim"], state)
                 all_sprites.add(explosao)
