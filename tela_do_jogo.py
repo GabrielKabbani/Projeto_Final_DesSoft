@@ -59,6 +59,22 @@ def load_assets (img_dir, snd_dir):
         img.set_colorkey(BLACK)
         explosion_anim.append(img)
     assets["explosion_anim"] = explosion_anim
+    raposa_anim = []
+    for i in range(1,5):
+        filename = "raposa_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (20,40))
+        img.set_colorkey(BLACK)
+        raposa_anim.append(img)
+    assets['raposa'] = raposa_anim
+    grass_anim = []
+    for i in range(1,6):
+        filename = "grass_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (32,32))
+        img.set_colorkey(BLACK)
+        grass_anim.append(img)
+    assets['grass'] = grass_anim
     return assets
 
 
@@ -389,6 +405,122 @@ class Explosion(pygame.sprite.Sprite):
                 self.image = self.explosion_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center         
+                
+class Raposa(pygame.sprite.Sprite):
+    #Construtor de classe.
+    def __init__ (self, center, raposa_anim, road_speed, centerx):
+        #Construtor de classe pai.
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Carregar animacao de explosao.
+        self.raposa_anim = raposa_anim
+        
+        #Inicia processo de animacao.
+        self.frame = 0
+        self.image = self.raposa_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+      
+        
+        self.road_speed = road_speed
+        
+        #Guarda tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
+        
+        #Controlle de ticks da animacao 1 tick = 1 milisegundo
+        self.frame_ticks = 120
+        
+        self.centerx = centerx
+        
+    def update(self):
+        self.rect.y += self.road_speed - 1
+        #Verifica tick atual.
+        now = pygame.time.get_ticks()
+        
+        #Verifica quantos ticks passaram des da ultima mudanca de frame
+        elapsed_tick = now - self.last_update
+        
+        #Se ja esta na hora de mudar de imagem.
+        if (elapsed_tick > self.frame_ticks):
+            
+            #Marca o tick da nova imagem.
+            self.last_update = now
+            
+            #Verifica se acabou a animacao.
+            if self.frame >= len(self.raposa_anim):
+                #Se sim mate explosao.
+                self.frame = 0
+                
+            else:
+                center = self.rect.center
+                self.image = self.raposa_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+                #Avanca um quadro.
+                self.frame += 1
+        
+        if self.rect.bottom > HEIGHT:
+            self.rect.x = self.centerx
+            self.rect.y = random.randint(-10000, -500)
+        
+
+class Grass(pygame.sprite.Sprite):
+    #Construtor de classe.
+    def __init__ (self, center, grass_anim, frame, road_speed, centerx):
+        #Construtor de classe pai.
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Carregar animacao de explosao.
+        self.grass_anim = grass_anim
+        
+        #Inicia processo de animacao.
+        self.frame = frame
+        self.image = self.grass_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+      
+        
+        self.road_speed = road_speed
+        
+        #Guarda tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
+        
+        #Controlle de ticks da animacao 1 tick = 1 milisegundo
+        self.frame_ticks = 120
+        
+        self.centerx = centerx
+        
+    def update(self):
+        self.rect.y += self.road_speed
+        
+        #Verifica tick atual.
+        now = pygame.time.get_ticks()
+        
+        #Verifica quantos ticks passaram des da ultima mudanca de frame
+        elapsed_tick = now - self.last_update
+        
+        #Se ja esta na hora de mudar de imagem.
+        if (elapsed_tick > self.frame_ticks):
+            
+            #Marca o tick da nova imagem.
+            self.last_update = now
+            
+            #Avanca um quadro.
+            self.frame += 1
+            
+            #Verifica se acabou a animacao.
+            if self.frame == len(self.grass_anim):
+                #Se sim mate explosao.
+                self.frame = 0
+            else:
+                center = self.rect.center
+                self.image = self.grass_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+        if self.rect.bottom > HEIGHT:
+            self.rect.x = self.centerx
+            self.rect.y = random.randint(-2000, -500)
+        
 
 
 def tela_do_jogo(screen):
@@ -438,6 +570,9 @@ def tela_do_jogo(screen):
 
     speed_boost = Boost(assets['speed_boost'], road_speed)
     
+    raposa_left = Raposa((16, -1000), assets['raposa'], road_speed, 16)
+    raposa_right = Raposa((WIDTH - 16, -2000), assets['raposa'], road_speed, WIDTH - 16)
+    
     #Adiciona sprite 
     all_sprites = pygame.sprite.Group()
 
@@ -446,6 +581,8 @@ def tela_do_jogo(screen):
     cerca_sprites = pygame.sprite.Group()
     
     mobs_sprites = pygame.sprite.Group()
+    
+    grass_sprites = pygame.sprite.Group()
 
     #Loops que criam plano de fundo e mobs
     tile_y = 0
@@ -467,6 +604,20 @@ def tela_do_jogo(screen):
     for i in assets["mobs"]:
         ii = Mobs(i, road_speed)
         mobs_sprites.add(ii)
+    
+    grass_y = -500
+    for i in range(1,4):
+        frame = random.randint(0,4)
+        i = Grass((10,grass_y), assets['grass'], frame, road_speed, 6)
+        grass_sprites.add(i)
+        grass_y += 13
+        
+    grass_y = -200
+    for i in range(1,4):
+        frame = random.randint(0,4)
+        i = Grass((385, grass_y), assets['grass'], frame, road_speed, WIDTH - 20)
+        grass_sprites.add(i)
+        grass_y += 13
 
 
     all_sprites.add(cerca_sprites)
@@ -475,6 +626,9 @@ def tela_do_jogo(screen):
     all_sprites.add(coin)
     all_sprites.add(mobs_sprites)
     all_sprites.add(player)
+    all_sprites.add(raposa_right)
+    all_sprites.add(raposa_left)
+    all_sprites.add(grass_sprites)
     all_sprites.add(score_board)
 
     
