@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 {
     "car_selected": 5,
     "top_score": 20
+=======
+{
+    "car_selected": 6,
+    "top_score": 50
+>>>>>>> 2af350225b7c6120e28b0e12af12740663dfc95e
 }
