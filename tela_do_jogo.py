@@ -58,6 +58,14 @@ def load_assets (img_dir, snd_dir):
         img.set_colorkey(BLACK)
         explosion_anim.append(img)
     assets["explosion_anim"] = explosion_anim
+    raposa_anim = []
+    for i in range(1,5):
+        filename = "raposa_{}.png".format(i)
+        img = pygame.image.load(path.join(img_dir, filename)).convert()
+        img = pygame.transform.scale(img, (20,40))
+        img.set_colorkey(BLACK)
+        raposa_anim.append(img)
+    assets['raposa'] = raposa_anim
     return assets
 
 
@@ -388,6 +396,69 @@ class Explosion(pygame.sprite.Sprite):
                 self.image = self.explosion_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center         
+                
+class Raposa(pygame.sprite.Sprite):
+    #Construtor de classe.
+    def __init__ (self, center, raposa_anim, road_speed):
+        #Construtor de classe pai.
+        pygame.sprite.Sprite.__init__(self)
+        
+        #Carregar animacao de explosao.
+        self.raposa_anim = raposa_anim
+        
+        #Inicia processo de animacao.
+        self.frame = 0
+        self.image = self.raposa_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+      
+        
+        self.road_speed = road_speed
+        
+        #Guarda tick da primeira imagem
+        self.last_update = pygame.time.get_ticks()
+        
+        #Controlle de ticks da animacao 1 tick = 1 milisegundo
+        self.frame_ticks = 120
+        
+        self.spawn = random.randint(1,3)
+        
+    def update(self):
+        self.rect.y += self.road_speed - 1
+        #Verifica tick atual.
+        now = pygame.time.get_ticks()
+        
+        #Verifica quantos ticks passaram des da ultima mudanca de frame
+        elapsed_tick = now - self.last_update
+        
+        #Se ja esta na hora de mudar de imagem.
+        if (elapsed_tick > self.frame_ticks):
+            
+            #Marca o tick da nova imagem.
+            self.last_update = now
+            
+            #Verifica se acabou a animacao.
+            if self.frame >= len(self.raposa_anim):
+                #Se sim mate explosao.
+                self.frame = 0
+                
+            else:
+                center = self.rect.center
+                self.image = self.raposa_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+                #Avanca um quadro.
+                self.frame += 1
+        
+        if self.rect.bottom > HEIGHT and self.spawn == 1:
+            self.rect.x = 15
+            self.rect.y = random.randint(-10000, -500)
+            self.spawn = random.randint(1,3)
+        elif self.rect.bottom > HEIGHT and self.spawn == 2:
+            self.rect.x = WIDTH - 15
+            self.rect.y = random.randint(-10000, -500)
+            self.spawn = random.randint(1,3)
+
 
 
 def tela_do_jogo(screen):
@@ -433,6 +504,8 @@ def tela_do_jogo(screen):
 
     speed_boost = Boost(assets['speed_boost'], road_speed)
     
+    raposa = Raposa((15, -2000), assets['raposa'], road_speed)
+    
     #Adiciona sprite 
     all_sprites = pygame.sprite.Group()
 
@@ -470,6 +543,7 @@ def tela_do_jogo(screen):
     all_sprites.add(coin)
     all_sprites.add(mobs_sprites)
     all_sprites.add(player)
+    all_sprites.add(raposa)
     all_sprites.add(score_board)
 
     
