@@ -459,7 +459,7 @@ class Raposa(pygame.sprite.Sprite):
                 #Avanca um quadro.
                 self.frame += 1
         
-        if self.rect.bottom > HEIGHT:
+        if self.rect.top > HEIGHT:
             self.rect.x = self.centerx
             self.rect.y = random.randint(-10000, -500)
         
