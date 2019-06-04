@@ -531,7 +531,7 @@ def tela_do_jogo(screen):
     
     dados = json.loads(texto)
     
-    road_speed = 3 #Velocidade do carro
+    road_speed = 5 #Velocidade do carro
 
     #Variavel de relogio:
     clock = pygame.time.Clock()
@@ -695,10 +695,10 @@ def tela_do_jogo(screen):
         
         if state == PLAYING:
             if speed_boost.speed_up:
-                road_speed = 9
+                road_speed = 12
                 
             else:
-                road_speed = 3
+                road_speed = 5
                 
         #Atualoza road_speed
         for sp in all_sprites:
